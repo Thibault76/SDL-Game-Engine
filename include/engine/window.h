@@ -15,6 +15,10 @@ typedef struct{
 	char* title;
 	void* icon;
 	float opacity;
+	Bool fullscreen;
+	Bool grab;
+	Bool bordered;
+	Bool minimized;
 
 	void* nativeWindow; // the pointer to the SDL_Window
 } EngineWindow;
@@ -29,6 +33,8 @@ typedef struct{
 	uint32_t height;
 	char* title;
 	void* icon;
+	Bool fullscreen;
+	Bool bordered;
 
 } EngineWindowDef;
 
@@ -183,4 +189,62 @@ void EngineWindowSetOpacity(EngineWindow* window, float opacity);
  */
 float EngineWindowGetOpacity(EngineWindow* window);
 
-// void EngineWindowSetFullscreen(EngineWindow* window, )
+/**
+ * @brief set the window to fullscreen mode
+ * @param fullscreen if fullscreen
+ */
+void EngineWindowSetFullscreen(EngineWindow* window, Bool fullscreen);
+
+/**
+ * @brief grab the window with the mouse
+ */
+void EngineWindowSetGrab(EngineWindow* window, Bool grab);
+
+/**
+ * @brief get if the window is currently grabed
+ * @param window the window to check
+ */
+Bool EngineWindowIsGrabed(EngineWindow* window);
+
+/**
+ * @brief set if the window is bordered
+ * @param window the window to set
+ * @param bordered 
+ */
+void EngineWindowSetBordered(EngineWindow* window, Bool bordered);
+
+/**
+ * @brief get if the window is bordered
+ * @param window the window to check
+ */
+void EngineWindowIsBordered(EngineWindow* window);
+
+/**
+ * @brief set the title of the window
+ * @param title the new title of the window
+ */
+void EngineWindowSetTitle(EngineWindow* window, const char* title);
+
+/**
+ * @brief get the title of the given window
+ * @return const char* 
+ */
+const char* EngineWindowGetTitle(EngineWindow* window);
+
+/**
+ * @brief maximize the window
+ * @param window the window to maximize
+ */
+void EngineWindowMaximize(EngineWindow* window);
+
+/**
+ * @brief minimize the window
+ * @param window the window to minimize
+ */
+void EngineWindowMinimize(EngineWindow* window);
+
+/**
+ * @brief check if the given window is minimized
+ * @param window 
+ */
+void EngineWindowIsMinimized(EngineWindow* window);

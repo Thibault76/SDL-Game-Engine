@@ -8,28 +8,54 @@
 // libs
 #include <libs/SDL2/SDL.h>
 
+static Bool isSDLInitialized = false;
+
+void initializeSDL(){
+	if (!isSDLInitialized && SDL_Init(SDL_INIT_EVERYTHING) != 0){
+		fprintf(stderr, "SDL_Init Error : %s", SDL_GetError());
+		exit(EXIT_FAILURE);
+	}
+
+	isSDLInitialized = true;
+}
+
 SDL_Window* createWindow(const char *title, int width, int height){
+	initializeSDL();
+
 	SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 
 	// there is no assert because this function might dosen't work on other devices
 	if (!window){
-		fprintf(stderr, "SDL_CreateWindow error : %s", SDL_GetError());
+		fprintf(stderr, "SDL_CreateWindow Error : %s", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
 }
 
 EngineWindowDef* EngineWindowCreateDef(void){
 	EngineWindowDef *def = malloc(sizeof(EngineWindowDef*));
+	
+	if (!def){
+		fprintf(stderr, "alloc Error");
+		exit(EXIT_FAILURE);
+	}
+
 	def->width = 1080;
 	def->height = 720;
 	def->title = NULL;
 	def->icon = NULL;
+	def->fullscreen = false;
+	def->bordered = true;
 	return def;
 }
 
 EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	assert(def != NULL && "cannot create a window from a NULL definition");
 	EngineWindow* window = malloc(sizeof(EngineWindow*));
+
+	if (!window){
+		fprintf(stderr, "alloc Error");
+		exit(EXIT_FAILURE);
+	}
 
 	window->nativeWindow = (void*)createWindow((def->title != NULL ? def->title : "SDL Game Engine"), (int)def->width, (int)def->height);
 
@@ -50,6 +76,8 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	window->minHeight = 0;
 	window->maxWidth = (uint32_t)-1;
 	window->maxHeight = (uint32_t)-1;
+
+	EngineWindowSetFullscreen(window, def->fullscreen);
 
 	free(def);
 	return window;
@@ -156,7 +184,7 @@ void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t*
 	if (height) *height = window->minHeight;
 }
 
-void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
+void EngineWindowGetMaximalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
 	assert(window != NULL && "cannot get the maximal size of a NULL window");
 	if (width) *width = window->maxWidth;
 	if (height) *height = window->maxHeight;
@@ -171,4 +199,66 @@ void EngineWindowSetOpacity(EngineWindow* window, float opacity){
 float EngineWindowGetOpacity(EngineWindow* window){
 	assert(window != NULL && "cannot get the opacity of a NULL window");
 	return window->opacity;
+}
+
+void EngineWindowSetFullscreen(EngineWindow* window, Bool fullscreen){
+	assert(window != NULL && "cannot set the fullscreen state of a NULL window");
+	window->fullscreen = fullscreen;
+
+	if (fullscreen){
+		SDL_SetWindowFullscreen(window->nativeWindow, SDL_WINDOW_FULLSCREEN);
+	} else {
+		SDL_SetWindowFullscreen(window->nativeWindow, 0);
+	}
+}
+
+void EngineWindowSetGrab(EngineWindow* window, Bool grab){
+	assert(window != NULL && "cannot set the grab state of a NULL window");
+	window->grab = grab;
+	SDL_SetWindowGrab(window->nativeWindow, grab);
+}
+
+Bool EngineWindowIsGrabed(EngineWindow* window){
+	assert(window != NULL && "cannot get the grab state of a NULL window");
+	return window->grab;
+}
+
+void EngineWindowSetBordered(EngineWindow* window, Bool bordered){
+	assert(window != NULL && "cannot set the bordered state of a NULL window");
+	window->bordered = bordered;
+	SDL_SetWindowBordered(window->nativeWindow, bordered);
+}
+
+void EngineWindowIsBordered(EngineWindow* window){
+	assert(window != NULL && "cannot get the bordered state of a NULL window");
+	return window->bordered;
+}
+
+void EngineWindowSetTitle(EngineWindow* window, const char* title){
+	assert(window != NULL && "cannot set the title of a NULL window");
+	if (window->title) free(window->title);
+	strcpy(window->title, title);
+	SDL_SetWindowTitle(window->nativeWindow, title);
+}
+
+const char* EngineWindowGetTitle(EngineWindow* window){
+	assert(window != NULL && "cannot get the title of a NULL window");
+	return window->title;
+}
+
+void EngineWindowMaximize(EngineWindow* window){
+	assert(window != NULL && "cannot set maximize state of a NULL window");
+	window->minimized = false;
+	SDL_MaximizeWindow(window->nativeWindow);
+}
+
+void EngineWindowMinimize(EngineWindow* window){
+	assert(window != NULL && "cannot set minimize state of a NULL window");
+	window->minimized = true;
+	SDL_MinimizeWindow(window->nativeWindow);
+}
+
+void EngineWindowIsMinimized(EngineWindow* window){
+	assert(window != NULL && "cannot get minimize state of a NULL window");
+	return window->minimized;
 }
