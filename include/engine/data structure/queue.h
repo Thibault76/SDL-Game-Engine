@@ -1,5 +1,6 @@
 #pragma once
-#include "core.h"
+
+typedef enum {false, true} Bool;
 
 /* Définition d'une file */
 typedef struct QueueElement{
@@ -16,7 +17,7 @@ typedef struct QueueStruct{
 
 /* Prototypes */
 Bool queueIsEmpty(QueueStruct *queue);
-void* queueLenght(QueueStruct *queue);
+int queueLenght(QueueStruct *queue);
 void* queueFirst(QueueStruct *queue);
 void* queueLast(QueueStruct *queue);
 void queuePush(QueueStruct *queue, void* x);

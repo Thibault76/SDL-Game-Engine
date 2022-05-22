@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "queue.h"
 
 Bool queueIsEmpty(QueueStruct *queue){
@@ -22,7 +22,7 @@ QueueStruct *queueNew(void){
 
 /*--------------------------------------------*/
 
-void* queueLenght(QueueStruct *queue){
+int queueLenght(QueueStruct *queue){
     return queue->nbElement;
 }
 
@@ -30,7 +30,7 @@ void* queueLenght(QueueStruct *queue){
 
 void* queueFirst(QueueStruct *queue){
     if(queueIsEmpty(queue))
-        exit(1);
+        return NULL;
     
     return queue->first->value;
 }
@@ -39,7 +39,7 @@ void* queueFirst(QueueStruct *queue){
 
 void* queueLast(QueueStruct *queue){
     if(queueIsEmpty(queue))
-        exit(1);
+        return NULL;
     
     return queue->last->value;
 }
@@ -93,11 +93,14 @@ void queuePop(QueueStruct *queue){
 
 void queueClear(QueueStruct *queue){
     if(queueIsEmpty(queue)){
+        free(queue);
         return;
     }
 
     while(!queueIsEmpty(queue))
-        popQueue();
+        queuePop(queue);
+    
+    free(queue);
 }
 
 /*--------------------------------------------*/
