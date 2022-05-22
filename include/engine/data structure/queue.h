@@ -1,31 +1,25 @@
-#ifndef __QUEUE__H__
-#define __QUEUE__H__
-
-/* Définition du type Booléen */
-typedef enum{
-    false,
-    true
-}Bool;
+#pragma once
+#include "core.h"
 
 /* Définition d'une file */
 typedef struct QueueElement{
-    int value;
+    void* value;
     struct QueueElement *next;
 }QueueElement, *Queue;
 
 /* Paramètres de la file */
-static QueueElement *first = NULL;
-static QueueElement *last = NULL;
-static int nbElement = 0;
+typedef struct QueueStruct{
+    QueueElement* first;
+    QueueElement* last;
+    int nbElement;
+}QueueStruct;
 
 /* Prototypes */
-Bool isEmptyQueue(void);
-int queueLenght(void);
-int queueFirst(void);
-int queueLast(void);
-void printQueue(void);
-void pushQueue(int x);
-void popQueue(void);
-void clearQueue(void);
-
-#endif
+Bool queueIsEmpty(QueueStruct *queue);
+void* queueLenght(QueueStruct *queue);
+void* queueFirst(QueueStruct *queue);
+void* queueLast(QueueStruct *queue);
+void queuePush(QueueStruct *queue, void* x);
+void queuePop(QueueStruct *queue);
+void queueClear(QueueStruct *queue);
+QueueStruct *queueNew(void);
