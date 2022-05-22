@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "queue.h"
 
-Bool queueIsEmpty(QueueStruct *queue){
+Bool EngineQueueIsEmpty(QueueStruct *queue){
     if(queue->first == NULL && queue->last == NULL)
         return true;
 
@@ -11,7 +11,7 @@ Bool queueIsEmpty(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-QueueStruct *queueNew(void){
+QueueStruct *EngineQueueNew(void){
     QueueStruct *q = malloc(sizeof(QueueStruct));
     q->first = NULL;
     q->last = NULL;
@@ -22,14 +22,14 @@ QueueStruct *queueNew(void){
 
 /*--------------------------------------------*/
 
-int queueLenght(QueueStruct *queue){
+int EngineQueueLenght(QueueStruct *queue){
     return queue->nbElement;
 }
 
 /*--------------------------------------------*/
 
-void* queueFirst(QueueStruct *queue){
-    if(queueIsEmpty(queue))
+void* EngineQueueFirst(QueueStruct *queue){
+    if(EngineQueueIsEmpty(queue))
         return NULL;
     
     return queue->first->value;
@@ -37,8 +37,8 @@ void* queueFirst(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void* queueLast(QueueStruct *queue){
-    if(queueIsEmpty(queue))
+void* EngineQueueLast(QueueStruct *queue){
+    if(EngineQueueIsEmpty(queue))
         return NULL;
     
     return queue->last->value;
@@ -46,7 +46,7 @@ void* queueLast(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void queuePush(QueueStruct *queue, void* x){
+void EngineQueuePush(QueueStruct *queue, void* x){
     QueueElement *element;
 
     element = malloc(sizeof(*element));
@@ -59,7 +59,7 @@ void queuePush(QueueStruct *queue, void* x){
     element->value = x;
     element->next = NULL;
 
-    if(queueIsEmpty(queue)){
+    if(EngineQueueIsEmpty(queue)){
         queue->first = element;
         queue->last = element;
     } else {
@@ -72,8 +72,8 @@ void queuePush(QueueStruct *queue, void* x){
 
 /*--------------------------------------------*/
 
-void queuePop(QueueStruct *queue){
-    if(queueIsEmpty(queue)){
+void EngineQueuePop(QueueStruct *queue){
+    if(EngineQueueIsEmpty(queue)){
         return;
     }
 
@@ -91,14 +91,14 @@ void queuePop(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void queueClear(QueueStruct *queue){
-    if(queueIsEmpty(queue)){
+void EngineQueueClear(QueueStruct *queue){
+    if(EngineQueueIsEmpty(queue)){
         free(queue);
         return;
     }
 
-    while(!queueIsEmpty(queue))
-        queuePop(queue);
+    while(!EngineQueueIsEmpty(queue))
+        EngineQueuePop(queue);
     
     free(queue);
 }

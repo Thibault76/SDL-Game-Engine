@@ -1,6 +1,5 @@
 #pragma once
-
-typedef enum {false, true} Bool;
+#include "core.h"
 
 /* Définition d'une file */
 typedef struct QueueElement{
@@ -16,11 +15,11 @@ typedef struct QueueStruct{
 }QueueStruct;
 
 /* Prototypes */
-Bool queueIsEmpty(QueueStruct *queue);
-int queueLenght(QueueStruct *queue);
-void* queueFirst(QueueStruct *queue);
-void* queueLast(QueueStruct *queue);
-void queuePush(QueueStruct *queue, void* x);
-void queuePop(QueueStruct *queue);
-void queueClear(QueueStruct *queue);
-QueueStruct *queueNew(void);
+Bool EngineQueueIsEmpty(QueueStruct *queue);
+int EngineQueueLenght(QueueStruct *queue);
+void* EngineQueueFirst(QueueStruct *queue);
+void* EngineQueueLast(QueueStruct *queue);
+void EngineQueuePush(QueueStruct *queue, void* x);
+void EngineQueuePop(QueueStruct *queue);
+void EngineQueueClear(QueueStruct *queue);
+QueueStruct *EngineQueueNew(void);
