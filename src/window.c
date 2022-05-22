@@ -37,10 +37,19 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	window->width = def->width;
 	window->height = def->height;
 
+	window->icon = NULL;
+
 	int x, y;
 	SDL_GetWindowPosition(window->nativeWindow, &x, &y);
+
 	window->x = x;
 	window->y = y;
+
+	window->opacity = 1.0;
+	window->minWidth = 0;
+	window->minHeight = 0;
+	window->maxWidth = (uint32_t)-1;
+	window->maxHeight = (uint32_t)-1;
 
 	free(def);
 	return window;
@@ -125,4 +134,41 @@ uint32_t EngineWindowGetPositionX(EngineWindow* window){
 uint32_t EngineWindowGetPositionY(EngineWindow* window){
 	assert(window != NULL && "cannot get the position of a NULL window");
 	return window->y;
+}
+
+void EngineWindowSetMinimalSize(EngineWindow* window, uint32_t width, uint32_t height){
+	assert(window != NULL && "cannot set the minimal size of a NULL window");
+	window->minWidth = width;
+	window->minHeight = height;
+	SDL_SetWindowMinimumSize(window->nativeWindow, (int)width, (int)height);
+}
+
+void EngineWindowSetMaximalSize(EngineWindow* window, uint32_t width, uint32_t height){
+	assert(window != NULL && "cannot set the maximal size of a NULL window");
+	window->maxWidth = width;
+	window->maxHeight = height;
+	SDL_SetWindowMaximumSize(window->nativeWindow, (int)width, (int)height);
+}
+
+void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
+	assert(window != NULL && "cannot get the minimal size of a NULL window");
+	if (width) *width = window->minWidth;
+	if (height) *height = window->minHeight;
+}
+
+void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
+	assert(window != NULL && "cannot get the maximal size of a NULL window");
+	if (width) *width = window->maxWidth;
+	if (height) *height = window->maxHeight;
+}
+
+void EngineWindowSetOpacity(EngineWindow* window, float opacity){
+	assert(window != NULL && "cannot set the opacity of a NULL window");
+	window->opacity = opacity;
+	SDL_SetWindowOpacity(window->nativeWindow, opacity);
+}
+
+float EngineWindowGetOpacity(EngineWindow* window){
+	assert(window != NULL && "cannot get the opacity of a NULL window");
+	return window->opacity;
 }

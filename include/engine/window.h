@@ -9,11 +9,12 @@ typedef struct{
 	uint32_t minHeight;
 	uint32_t maxWidth;
 	uint32_t maxHeight;
-	
+
 	uint32_t x;
 	uint32_t y;
 	char* title;
 	void* icon;
+	float opacity;
 
 	void* nativeWindow; // the pointer to the SDL_Window
 } EngineWindow;
@@ -140,3 +141,46 @@ uint32_t EngineWindowGetPositionX(EngineWindow* window);
  * @return uint32_t 
  */
 uint32_t EngineWindowGetPositionY(EngineWindow* window);
+
+/**
+ * @brief set the minimal size of the window
+ * @param width the miniaml width in pixels
+ * @param height the minimal height in pixels
+ */
+void EngineWindowSetMinimalSize(EngineWindow* window, uint32_t width, uint32_t height);
+
+/**
+ * @brief set the maximal size of the window
+ * @param width the maximal width in pixels
+ * @param height the maximal height in pixels
+ */
+void EngineWindowSetMaximalSize(EngineWindow* window, uint32_t width, uint32_t height);
+
+/**
+ * @brief get the minimal size of the window, in pixels
+ * @param width the pointer to the width destination, can be NULL
+ * @param height the pointer to the height destination, can be NULL
+ */
+void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t* height);
+
+/**
+ * @brief get the maximal size of the window, in pixels
+ * @param width the pointer to the width destination, can be NULL
+ * @param height the pointer to the height destination, can be NULL
+ */
+void EngineWindowGetMaximalSize(EngineWindow* window, uint32_t* width, uint32_t* height);
+
+/**
+ * @brief set the opacity of the window in range from 0.0 to 1.0
+ * @param opacity the opacity in range from 0.0 to 1.0 
+ */
+void EngineWindowSetOpacity(EngineWindow* window, float opacity);
+
+/**
+ * @brief get the opacity of the window
+ * @param window the window
+ * @return float 
+ */
+float EngineWindowGetOpacity(EngineWindow* window);
+
+// void EngineWindowSetFullscreen(EngineWindow* window, )
