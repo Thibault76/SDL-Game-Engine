@@ -5,7 +5,15 @@
 typedef struct{
 	uint32_t width;
 	uint32_t height;
+	uint32_t minWidth;
+	uint32_t minHeight;
+	uint32_t maxWidth;
+	uint32_t maxHeight;
+	
+	uint32_t x;
+	uint32_t y;
 	char* title;
+	void* icon;
 
 	void* nativeWindow; // the pointer to the SDL_Window
 } EngineWindow;
@@ -27,7 +35,7 @@ typedef struct{
  * @brief initialize a new Window definition with basics parameters
  * @return EngineWindowDef* 
  */
-EngineWindowDef* EngineCreateWindowDef();
+EngineWindowDef* EngineWindowCreateDef(void);
 
 /**
  * @brief create a window with from the given definition
@@ -35,11 +43,100 @@ EngineWindowDef* EngineCreateWindowDef();
  * @param def the pointer to the window definition /!\ get implicitly destroyed once the window is created /!\
  * @return EngineWindow* 
  */
-EngineWindow* EngineCreateWindow(EngineWindowDef* def);
+EngineWindow* EngineWindowCreate(EngineWindowDef* def);
 
 /**
  * @brief close and destroy from the memory the given window
  * @param window the window to destroy
  * @return EngineWindow* 
  */
-EngineWindow* EngineDestroyWindow(EngineWindow* window);
+EngineWindow* EngineWindowDestroy(EngineWindow* window);
+
+/**
+ * @brief set the size of the given window
+ * @param window the window to resize
+ * @param width the new width of the window in pixels
+ * @param height the new height of the window in pixels
+ */
+void EngineWindowSetSize(EngineWindow* window, uint32_t width, uint32_t height);
+
+/**
+ * @brief set the width of the given window
+ * @param window the window to resize
+ * @param width the new width of the window in pixels
+ */
+void EngineWindowSetWidth(EngineWindow* window, uint32_t width);
+
+/**
+ * @brief set the width of the given window
+ * @param window the window to resize
+ * @param height the new height of the window in pixels
+ */
+void EngineWindowSetHeight(EngineWindow* window, uint32_t height);
+
+/**
+ * @brief set the position on pixels of the top left corner of the window
+ * @param window the window to move
+ * @param x the x axis in pixels of the window
+ * @param y the y axis in pixels of the window
+ */
+void EngineWindowSetPosition(EngineWindow* window, uint32_t x, uint32_t y);
+
+/**
+ * @brief set the position on pixels of the top left corner of the window
+ * @param window the window to move
+ * @param x the x axis in pixels of the window
+ */
+void EngineWindowSetPositionX(EngineWindow* window, uint32_t x);
+
+/**
+ * @brief set the position on pixels of the top left corner of the window
+ * @param window the window to move
+ * @param y the y axis in pixels of the window
+ */
+void EngineWindowSetPositionY(EngineWindow* window, uint32_t y);
+
+/**
+ * @brief move the window to the center of the monitor
+ * @param window the window to move
+ */
+void EngineWindowSetPositionCenter(EngineWindow* window);
+
+/**
+ * @brief retrive the size of the window
+ * @param window
+ * @param width the pointer to the width destination, can be NULL 
+ * @param height the pointer to the height destination, can be NULL
+ */
+void EngineWindowGetSize(EngineWindow* window, uint32_t* width, uint32_t* height);
+
+/**
+ * @brief get the width of the given window
+ * @return uint32_t 
+ */
+uint32_t EngineWindowGetWidth(EngineWindow* window);
+
+/**
+ * @brief get the height of the given window
+ * @return uint32_t 
+ */
+uint32_t EngineWindowGetHeight(EngineWindow* window);
+
+/**
+ * @brief get the position of the top left corner of the window, in pixels
+ * @param x the pointer to the X destination, can be NULL
+ * @param y the pointer to the Y destination, can be NULL
+ */
+void EngineWindowGetPosition(EngineWindow* window, uint32_t* x, uint32_t* y);
+
+/**
+ * @brief get the X position of the top left corner of the window, in pixels
+ * @return uint32_t 
+ */
+uint32_t EngineWindowGetPositionX(EngineWindow* window);
+
+/**
+ * @brief get the X position of the top left corner of the window, in pixels
+ * @return uint32_t 
+ */
+uint32_t EngineWindowGetPositionY(EngineWindow* window);
