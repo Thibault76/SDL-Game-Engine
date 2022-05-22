@@ -22,7 +22,7 @@ QueueStruct *EngineQueueNew(void){
 
 /*--------------------------------------------*/
 
-int EngineQueueLenght(QueueStruct *queue){
+int EngineQueueLength(QueueStruct *queue){
     return queue->nbElement;
 }
 
@@ -101,6 +101,14 @@ void EngineQueueClear(QueueStruct *queue){
         EngineQueuePop(queue);
     
     free(queue);
+}
+
+/*--------------------------------------------*/
+
+void EngineQueueSwitch(QueueStruct *a, QueueStruct *b){
+    QueueStruct *c = a;
+    a = b;
+    b = c;
 }
 
 /*--------------------------------------------*/
