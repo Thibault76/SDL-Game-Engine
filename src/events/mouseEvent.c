@@ -1,7 +1,7 @@
 #include "engine/events/mouseEvent.h"
 
 EngineMouseEventMoved* EngineMouseEventMovedCreate(void){
-	EngineMouseEventMoved* eventData = malloc(sizeof(EngineMouseEventMoved*));
+	EngineMouseEventMoved* eventData = malloc(sizeof(EngineMouseEventMoved));
 	MALLOC_CHECK(eventData);
 
 	eventData->x = 0;
@@ -10,7 +10,7 @@ EngineMouseEventMoved* EngineMouseEventMovedCreate(void){
 }
 
 EngineMouseEventButtonPressed* EngineMouseEventButtonPressedCreate(void){
-	EngineMouseEventButtonPressed* eventData = malloc(sizeof(EngineMouseEventButtonPressed*));
+	EngineMouseEventButtonPressed* eventData = malloc(sizeof(EngineMouseEventButtonPressed));
 	MALLOC_CHECK(eventData);
 
 	eventData->button = ENGINE_MOUSE_BUTTON_LEFT;
@@ -18,7 +18,7 @@ EngineMouseEventButtonPressed* EngineMouseEventButtonPressedCreate(void){
 }
 
 EngineMouseEventButtonReleased* EngineMouseEventButtonReleasedCreate(void){
-	EngineMouseEventButtonReleased* eventData = malloc(sizeof(EngineMouseEventButtonReleased*));
+	EngineMouseEventButtonReleased* eventData = malloc(sizeof(EngineMouseEventButtonReleased));
 	MALLOC_CHECK(eventData);
 
 	eventData->button = ENGINE_MOUSE_BUTTON_LEFT;
@@ -26,7 +26,7 @@ EngineMouseEventButtonReleased* EngineMouseEventButtonReleasedCreate(void){
 }
 
 EngineMouseEventScrolled* EngineMouseEventScrolledCreate(void){
-	EngineMouseEventScrolled* eventData = malloc(sizeof(EngineMouseEventScrolled*));
+	EngineMouseEventScrolled* eventData = malloc(sizeof(EngineMouseEventScrolled));
 	MALLOC_CHECK(eventData);
 
 	eventData->yOffset = 0;

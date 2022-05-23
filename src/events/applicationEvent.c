@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 EngineWindowEventResized *EngineWindowEventResizedCreate(void){
-	EngineWindowEventResized* eventData = malloc(sizeof(EngineWindowEventResized*));
+	EngineWindowEventResized* eventData = malloc(sizeof(EngineWindowEventResized));
 
 	if (!eventData){
 		fprintf(stderr, "malloc Error");
@@ -18,7 +18,7 @@ EngineWindowEventResized *EngineWindowEventResizedCreate(void){
 }
 
 EngineWindowEventMoved* EngineWindowEventMovedCreate(void){
-	EngineWindowEventMoved* eventData = malloc(sizeof(EngineWindowEventMoved*));
+	EngineWindowEventMoved* eventData = malloc(sizeof(EngineWindowEventMoved));
 
 	if (!eventData){
 		fprintf(stderr, "malloc Error");
