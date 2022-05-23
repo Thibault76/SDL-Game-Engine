@@ -6,17 +6,17 @@
  * 
  */
 typedef struct QueueElement{
-    void* value;
+    void *value;
     struct QueueElement *next;
-}QueueElement, *Queue;
+}QueueElement;
 
 /**
  * @brief queue structure
  * 
  */
 typedef struct QueueStruct{
-    QueueElement* first;
-    QueueElement* last;
+    QueueElement *first;
+    QueueElement *last;
     int nbElement;
 }QueueStruct;
 
