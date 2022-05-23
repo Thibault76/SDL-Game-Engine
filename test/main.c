@@ -19,7 +19,6 @@ int main(int argc, char **argv){
 	while (app->running){
 		EngineWindowUpdate(app->window);
 	}
-	
 
 	return EXIT_SUCCESS;
 }
