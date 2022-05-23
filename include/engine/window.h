@@ -217,7 +217,7 @@ void EngineWindowSetBordered(EngineWindow* window, Bool bordered);
  * @brief get if the window is bordered
  * @param window the window to check
  */
-void EngineWindowIsBordered(EngineWindow* window);
+Bool EngineWindowIsBordered(EngineWindow* window);
 
 /**
  * @brief set the title of the window
@@ -247,4 +247,4 @@ void EngineWindowMinimize(EngineWindow* window);
  * @brief check if the given window is minimized
  * @param window 
  */
-void EngineWindowIsMinimized(EngineWindow* window);
+Bool EngineWindowIsMinimized(EngineWindow* window);

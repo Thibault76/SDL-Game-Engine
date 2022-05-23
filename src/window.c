@@ -8,19 +8,17 @@
 // libs
 #include <libs/SDL2/SDL.h>
 
-static Bool isSDLInitialized = false;
+static uint8_t windowCount = 0;
 
 void initializeSDL(){
-	if (!isSDLInitialized && SDL_Init(SDL_INIT_EVERYTHING) != 0){
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
 		fprintf(stderr, "SDL_Init Error : %s", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
-
-	isSDLInitialized = true;
 }
 
 SDL_Window* createWindow(const char *title, int width, int height){
-	initializeSDL();
+	if (windowCount == 0) initializeSDL();
 
 	SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 
@@ -29,6 +27,20 @@ SDL_Window* createWindow(const char *title, int width, int height){
 		fprintf(stderr, "SDL_CreateWindow Error : %s", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
+
+	windowCount++;
+}
+
+SDL_Window* destroyWindow(SDL_Window* window){
+	if (window){
+		SDL_DestroyWindow(window);
+		windowCount--;
+
+		if (windowCount == 0){
+			SDL_Quit();
+		}
+	}
+	return NULL;
 }
 
 EngineWindowDef* EngineWindowCreateDef(void){
@@ -85,6 +97,7 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 
 EngineWindow* EngineWindowDestroy(EngineWindow* window){
 	assert(window != NULL && "cannot destroy a NULL window");
+	destroyWindow(window->nativeWindow);
 	free(window);
 	return NULL;
 }
@@ -229,7 +242,7 @@ void EngineWindowSetBordered(EngineWindow* window, Bool bordered){
 	SDL_SetWindowBordered(window->nativeWindow, bordered);
 }
 
-void EngineWindowIsBordered(EngineWindow* window){
+Bool EngineWindowIsBordered(EngineWindow* window){
 	assert(window != NULL && "cannot get the bordered state of a NULL window");
 	return window->bordered;
 }
@@ -258,7 +271,7 @@ void EngineWindowMinimize(EngineWindow* window){
 	SDL_MinimizeWindow(window->nativeWindow);
 }
 
-void EngineWindowIsMinimized(EngineWindow* window){
+Bool EngineWindowIsMinimized(EngineWindow* window){
 	assert(window != NULL && "cannot get minimize state of a NULL window");
 	return window->minimized;
 }
