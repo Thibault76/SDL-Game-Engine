@@ -30,6 +30,7 @@ SDL_Window* createWindow(const char *title, int width, int height){
 	}
 
 	windowCount++;
+	return window;
 }
 
 SDL_Window* destroyWindow(SDL_Window* window){
@@ -45,7 +46,7 @@ SDL_Window* destroyWindow(SDL_Window* window){
 }
 
 EngineWindowDef* EngineWindowCreateDef(void){
-	EngineWindowDef *def = malloc(sizeof(EngineWindowDef*));
+	EngineWindowDef *def = malloc(sizeof(EngineWindowDef));
 	
 	if (!def){
 		fprintf(stderr, "alloc Error");
@@ -64,7 +65,8 @@ EngineWindowDef* EngineWindowCreateDef(void){
 
 EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	assert(def != NULL && "cannot create a window from a NULL definition");
-	EngineWindow* window = malloc(sizeof(EngineWindow*));
+	EngineWindow* window;
+	window = malloc(sizeof(EngineWindow));
 
 	if (!window){
 		fprintf(stderr, "alloc Error");
@@ -72,8 +74,12 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	}
 
 	window->nativeWindow = (void*)createWindow((def->title != NULL ? def->title : "SDL Game Engine"), (int)def->width, (int)def->height);
+	
+	const char* title = SDL_GetWindowTitle(window->nativeWindow);
+	
+	window->title = malloc(sizeof(char) * strlen(title));
+	strcpy(window->title, title);
 
-	strcpy(window->title, SDL_GetWindowTitle(window->nativeWindow));
 	window->width = def->width;
 	window->height = def->height;
 
@@ -98,6 +104,7 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 EngineWindow* EngineWindowDestroy(EngineWindow* window){
 	assert(window != NULL && "cannot destroy a NULL window");
 	destroyWindow(window->nativeWindow);
+	free(window->title);
 	free(window);
 	return NULL;
 }
