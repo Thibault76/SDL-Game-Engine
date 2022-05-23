@@ -3,7 +3,7 @@ VERSION = 0.1.0
 
 # compiler
 CXX = gcc
-LIBSFLAGS = -lmingw32
+LIBSFLAGS = -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc
 CFLAGS =
 DEFINES =
 INCLUDE = include/
@@ -63,7 +63,7 @@ $(OBJ)/%.o : $(SRC)/*/*/%.c
 
 
 $(TEST_OUT) : $(TEST_OBJS)
-	ar rcs $(TEST_BIN)/$(TEST_OUT).a $(TEST_OBJ)/*.o
+	gcc $(TEST_OBJ)/*.o -o $(TEST_BIN)/$(TEST_OUT) -L $(TEST_LIB) -lEngine -L $(LIB) $(LIBSFLAGS)
 
 $(TEST_OBJ)/%.o : $(TEST_SRC)/%.c
 	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(TEST_LIB) $(DEFINES) $(CFLAGS)
