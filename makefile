@@ -13,7 +13,7 @@ BIN = out
 SRC = src
 OBJ = .obj
 LIB = libs
-OUT = engine
+OUT = libEngine
 
 # source files
 SRCS = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/**/*.c) $(wildcard $(SRC)/**/**/*.c)
@@ -33,6 +33,11 @@ dbgRebuild: rebuild
 
 rebuild: clean
 rebuild: $(OUT)
+
+test: test/test.exe
+
+test/test.exe : test/%.c
+	gcc test/*.c -I$(INCLUDE) -o test/test.exe -L $(BIN)/ -lEngine -lmingw32
 
 clean:
 	@del $(OBJ)\*.o
