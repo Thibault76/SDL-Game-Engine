@@ -13,13 +13,13 @@ typedef struct{
 } EngineWindowEventMoved;
 
 /**
- * @brief create the data for the window resied event
+ * @brief create the data for the window resized event
  * @return EngineWindowEventResized* 
  */
-EngineWindowEventResized *EngineWindowEventResizedCreate();
+EngineWindowEventResized *EngineWindowEventResizedCreate(void);
 
 /**
  * @brief create the data for the window moved event
  * @return EngineWindowEventResized* 
  */
-EngineWindowEventMoved* EngineWindowEventMovedCreate();
+EngineWindowEventMoved* EngineWindowEventMovedCreate(void);

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-EngineWindowEventResized *EngineWindowEventResizedCreate(){
+EngineWindowEventResized *EngineWindowEventResizedCreate(void){
 	EngineWindowEventResized* eventData = malloc(sizeof(EngineWindowEventResized*));
 
 	if (!eventData){
@@ -17,7 +17,7 @@ EngineWindowEventResized *EngineWindowEventResizedCreate(){
 	return eventData;
 }
 
-EngineWindowEventMoved* EngineWindowEventMovedCreate(){
+EngineWindowEventMoved* EngineWindowEventMovedCreate(void){
 	EngineWindowEventMoved* eventData = malloc(sizeof(EngineWindowEventMoved*));
 
 	if (!eventData){
