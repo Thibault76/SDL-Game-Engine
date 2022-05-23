@@ -3,7 +3,7 @@ VERSION = 0.1.0
 
 # compiler
 CXX = gcc
-LIBSFLAGS = -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc
+LIBSFLAGS = -lmingw32 -lSDL2main -lSDL2
 CFLAGS =
 DEFINES =
 INCLUDE = include/
@@ -13,21 +13,11 @@ BIN = out
 SRC = src
 OBJ = .obj
 LIB = libs
-OUT = libEngine
-
-# tests
-TEST_BIN = test/out
-TEST_SRC = test
-TEST_OBJ = test/.obj
-TEST_LIB = $(BIN)
-TEST_OUT = test.exe
+OUT = engine
 
 # source files
 SRCS = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/**/*.c) $(wildcard $(SRC)/**/**/*.c)
 OBJS := $(patsubst %.c, $(OBJ)/%.o, $(notdir $(SRCS)))
-
-TEST_SRCS = $(wildcard $(TEST_SRC)/*.c) $(wildcard $(TEST_SRC)/**/*.c) $(wildcard $(TEST_SRC)/**/**/*.c)
-TEST_OBJS := $(patsubst %.c, $(TEST_OBJ)/%.o, $(notdir $(TEST_SRCS)))
 
 all: $(OUT)
 
@@ -50,29 +40,17 @@ clean:
 	@del $(OBJ)\*.o
 
 $(OUT) : $(OBJS)
-	ar rcs $(BIN)/$(OUT).a $(OBJ)/*.o
+	$(CXX) $(OBJ)/*.o -I $(INCLUDE) -L $(LIB) -o $(BIN)\$(OUT) $(CFLAGS) $(DEFINES) $(LIBSFLAGS)
 
 $(OBJ)/%.o : $(SRC)/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS)
+	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS) -L $(LIB) $(LIBSFLAGS)
 
 $(OBJ)/%.o : $(SRC)/*/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS)
+	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS) -L $(LIB) $(LIBSFLAGS)
 
 $(OBJ)/%.o : $(SRC)/*/*/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS)
+	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(LIB) $(DEFINES) $(CFLAGS) -L $(LIB) $(LIBSFLAGS)
 
-
-$(TEST_OUT) : $(TEST_OBJS)
-	gcc $(TEST_OBJ)/*.o -o $(TEST_BIN)/$(TEST_OUT) -L $(TEST_LIB) -lEngine -L $(LIB) $(LIBSFLAGS)
-
-$(TEST_OBJ)/%.o : $(TEST_SRC)/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(TEST_LIB) $(DEFINES) $(CFLAGS)
-
-$(TEST_OBJ)/%.o : $(TEST_SRC)/*/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(TEST_LIB) $(DEFINES) $(CFLAGS)
-
-$(TEST_OBJ)/%.o : $(TEST_SRC)/*/*/%.c
-	$(CXX) -o $@ -c $< -I $(INCLUDE) -L $(TEST_LIB) $(DEFINES) $(CFLAGS)
 
 info:
 	@echo -----------------------------------------------------
