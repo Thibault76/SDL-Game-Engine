@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core.h"
+#include "events/event.h"
 
 typedef struct{
 	uint32_t width;
@@ -20,6 +21,8 @@ typedef struct{
 	Bool bordered;
 	Bool minimized;
 
+	void (*eventCallback)(EngineEvent*);
+
 	void* nativeWindow; // the pointer to the SDL_Window
 } EngineWindow;
 
@@ -35,6 +38,7 @@ typedef struct{
 	void* icon;
 	Bool fullscreen;
 	Bool bordered;
+	void (*eventCallback)(EngineEvent*);
 
 } EngineWindowDef;
 
@@ -248,3 +252,15 @@ void EngineWindowMinimize(EngineWindow* window);
  * @param window 
  */
 Bool EngineWindowIsMinimized(EngineWindow* window);
+
+/**
+ * @brief update the given window
+ * @param window 
+ */
+void EngineWindowUpdate(EngineWindow* window);
+
+/**
+ * @brief set the event callback of the given window
+ * @param callback the callback function
+ */
+void EngineWindowSetEventCallback(EngineWindow* window, void(*callback)(EngineEvent*));

@@ -10,3 +10,5 @@ typedef signed long long int64_t;
 typedef unsigned long long uint64_t;
 
 typedef enum {false, true} Bool;
+
+#define BIT(x) (1 << x)
