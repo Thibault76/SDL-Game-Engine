@@ -4,32 +4,72 @@
 
 // engine
 #include "engine/window.h"
+#include "engine/events/mouseEvent.h"
 
 // libs
 #include <libs/SDL2/SDL.h>
 
-SDL_Window* createWindow(const char *title, int width, int height){
-	SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+static uint8_t windowCount = 0;
 
-	// there is no assert because this function might dosen't work on other devices
-	if (!window){
-		fprintf(stderr, "SDL_CreateWindow error : %s", SDL_GetError());
+void initializeSDL(){
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+		fprintf(stderr, "SDL_Init Error : %s", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
 }
 
+SDL_Window* createWindow(const char *title, int width, int height){
+	if (windowCount == 0) initializeSDL();
+
+	SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+
+	// there is no assert because this function might dosen't work on other devices
+	if (!window){
+		fprintf(stderr, "SDL_CreateWindow Error : %s", SDL_GetError());
+		exit(EXIT_FAILURE);
+	}
+
+	windowCount++;
+}
+
+SDL_Window* destroyWindow(SDL_Window* window){
+	if (window){
+		SDL_DestroyWindow(window);
+		windowCount--;
+
+		if (windowCount == 0){
+			SDL_Quit();
+		}
+	}
+	return NULL;
+}
+
 EngineWindowDef* EngineWindowCreateDef(void){
 	EngineWindowDef *def = malloc(sizeof(EngineWindowDef*));
+	
+	if (!def){
+		fprintf(stderr, "alloc Error");
+		exit(EXIT_FAILURE);
+	}
+
 	def->width = 1080;
 	def->height = 720;
 	def->title = NULL;
 	def->icon = NULL;
+	def->eventCallback = NULL;
+	def->fullscreen = false;
+	def->bordered = true;
 	return def;
 }
 
 EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	assert(def != NULL && "cannot create a window from a NULL definition");
 	EngineWindow* window = malloc(sizeof(EngineWindow*));
+
+	if (!window){
+		fprintf(stderr, "alloc Error");
+		exit(EXIT_FAILURE);
+	}
 
 	window->nativeWindow = (void*)createWindow((def->title != NULL ? def->title : "SDL Game Engine"), (int)def->width, (int)def->height);
 
@@ -45,11 +85,11 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	window->x = x;
 	window->y = y;
 
-	window->opacity = 1.0;
-	window->minWidth = 0;
-	window->minHeight = 0;
-	window->maxWidth = (uint32_t)-1;
-	window->maxHeight = (uint32_t)-1;
+	EngineWindowSetOpacity(window, 1.0);
+	EngineWindowSetMinimalSize(window, 0, 0);
+	EngineWindowSetMaximalSize(window, (uint32_t)-1, (uint32_t)-1);
+	EngineWindowSetFullscreen(window, def->fullscreen);
+	EngineWindowSetEventCallback(window, def->eventCallback);
 
 	free(def);
 	return window;
@@ -57,6 +97,7 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 
 EngineWindow* EngineWindowDestroy(EngineWindow* window){
 	assert(window != NULL && "cannot destroy a NULL window");
+	destroyWindow(window->nativeWindow);
 	free(window);
 	return NULL;
 }
@@ -156,7 +197,7 @@ void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t*
 	if (height) *height = window->minHeight;
 }
 
-void EngineWindowGetMinimalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
+void EngineWindowGetMaximalSize(EngineWindow* window, uint32_t* width, uint32_t* height){
 	assert(window != NULL && "cannot get the maximal size of a NULL window");
 	if (width) *width = window->maxWidth;
 	if (height) *height = window->maxHeight;
@@ -171,4 +212,257 @@ void EngineWindowSetOpacity(EngineWindow* window, float opacity){
 float EngineWindowGetOpacity(EngineWindow* window){
 	assert(window != NULL && "cannot get the opacity of a NULL window");
 	return window->opacity;
+}
+
+void EngineWindowSetFullscreen(EngineWindow* window, Bool fullscreen){
+	assert(window != NULL && "cannot set the fullscreen state of a NULL window");
+	window->fullscreen = fullscreen;
+
+	if (fullscreen){
+		SDL_SetWindowFullscreen(window->nativeWindow, SDL_WINDOW_FULLSCREEN);
+	} else {
+		SDL_SetWindowFullscreen(window->nativeWindow, 0);
+	}
+}
+
+void EngineWindowSetGrab(EngineWindow* window, Bool grab){
+	assert(window != NULL && "cannot set the grab state of a NULL window");
+	window->grab = grab;
+	SDL_SetWindowGrab(window->nativeWindow, grab);
+}
+
+Bool EngineWindowIsGrabed(EngineWindow* window){
+	assert(window != NULL && "cannot get the grab state of a NULL window");
+	return window->grab;
+}
+
+void EngineWindowSetBordered(EngineWindow* window, Bool bordered){
+	assert(window != NULL && "cannot set the bordered state of a NULL window");
+	window->bordered = bordered;
+	SDL_SetWindowBordered(window->nativeWindow, bordered);
+}
+
+Bool EngineWindowIsBordered(EngineWindow* window){
+	assert(window != NULL && "cannot get the bordered state of a NULL window");
+	return window->bordered;
+}
+
+void EngineWindowSetTitle(EngineWindow* window, const char* title){
+	assert(window != NULL && "cannot set the title of a NULL window");
+	if (window->title) free(window->title);
+	strcpy(window->title, title);
+	SDL_SetWindowTitle(window->nativeWindow, title);
+}
+
+const char* EngineWindowGetTitle(EngineWindow* window){
+	assert(window != NULL && "cannot get the title of a NULL window");
+	return window->title;
+}
+
+void EngineWindowMaximize(EngineWindow* window){
+	assert(window != NULL && "cannot set maximize state of a NULL window");
+	window->minimized = false;
+	SDL_MaximizeWindow(window->nativeWindow);
+}
+
+void EngineWindowMinimize(EngineWindow* window){
+	assert(window != NULL && "cannot set minimize state of a NULL window");
+	window->minimized = true;
+	SDL_MinimizeWindow(window->nativeWindow);
+}
+
+Bool EngineWindowIsMinimized(EngineWindow* window){
+	assert(window != NULL && "cannot get minimize state of a NULL window");
+	return window->minimized;
+}
+
+void EngineWindowQuitEvent(EngineWindow* window){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent *event = EngineEventCreate();
+
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_CLOSED;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineWindowResizedEvent(EngineWindow* window, uint32_t width, uint32_t height){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineWindowEventResized* data = EngineWindowEventResizedCreate();
+
+		data->width = width;
+		data->height = height;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_RESIZED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineWindowMovedEvent(EngineWindow* window, uint32_t x, uint32_t y){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineWindowEventMoved* data = EngineWindowEventMovedCreate();
+		
+		data->x = x;
+		data->y = y;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_MOVED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineWindowFocusedEvent(EngineWindow* window){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_FOCUSED;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}	
+}
+
+void EngineWindowFocusLostEvent(EngineWindow* window){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WiNDOW_LOST_FOCUS;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineWindowMinimizedEvent(EngineWindow* window){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+
+		event->category = ENGINE_EVENT_CATEGORY_INPUT| ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_MINIMIZED;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineWindowMaximizedEvent(EngineWindow* window){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+
+		event->category = ENGINE_EVENT_CATEGORY_INPUT| ENGINE_EVENT_CATEGORY_APPLICATION;
+		event->type = ENGINE_EVENT_TYPE_WINDOW_MAXIMIZED;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineMouseMovedEvent(EngineWindow* window, uint32_t x, uint32_t y){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineMouseEventMoved* data = EngineMouseEventMovedCreate();
+
+		data->x = x;
+		data->y = y;
+		event->category = ENGINE_EVENT_CATEGORY_MOUSE | ENGINE_EVENT_CATEGORY_INPUT;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_MOVED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineMouseButtonPressedEvent(EngineWindow* window, EngineMouseButton button){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineMouseEventButtonPressed* data = EngineMouseEventButtonPressedCreate();
+
+		data->button = button;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_BUTTON_PRESSED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineMouseButtonReleasedEvent(EngineWindow* window, EngineMouseButton button){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineMouseEventButtonReleased* data = EngineMouseEventButtonReleasedCreate();
+
+		data->button = button;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_BUTTON_RELEASED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineMouseScrolledEvent(EngineWindow* window, float yOffset){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineMouseEventScrolled* data = EngineMouseEventScrolledCreate();
+
+		data->yOffset = yOffset;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_SCROLLED;
+		event->data = data;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+
+}
+
+void EngineWindowUpdate(EngineWindow* window){
+	assert(window != NULL && "cannot update a NULL window");
+
+	SDL_Event e;
+	while (SDL_PollEvent(&e)){
+		switch (e.type){
+			case SDL_QUIT: EngineWindowQuitEvent(window); break;
+			case SDL_WINDOWEVENT_RESIZED: EngineWindowResizedEvent(window, (uint32_t)e.window.data1, (uint32_t)e.window.data2); break;
+			case SDL_WINDOWEVENT_MOVED: EngineWindowMovedEvent(window, e.window.data1, e.window.data2); break;
+			case SDL_WINDOWEVENT_FOCUS_GAINED: EngineWindowFocusedEvent(window); break;
+			case SDL_WINDOWEVENT_FOCUS_LOST: EngineWindowFocusLostEvent(window); break;
+			case SDL_WINDOWEVENT_MINIMIZED: EngineWindowMinimizedEvent(window); break;
+			case SDL_WINDOWEVENT_MAXIMIZED: EngineWindowMaximizedEvent(window); break;
+			case SDL_MOUSEMOTION: EngineMouseMovedEvent(window, (uint32_t)e.motion.x, (uint32_t)e.motion.y); break;
+			case SDL_MOUSEBUTTONDOWN: EngineMouseButtonPressedEvent(window, e.button.button); break;
+			case SDL_MOUSEWHEEL: EngineMouseScrolledEvent(window, e.wheel.preciseY); break;
+
+		}
+	}
+}
+
+void EngineWindowSetEventCallback(EngineWindow* window, void(*callback)(EngineEvent*)){
+	assert(window != NULL && "cannot set the callback of a NULL window");
+	window->eventCallback = callback;
 }
