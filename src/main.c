@@ -8,6 +8,7 @@ typedef struct{
 } Application;
 
 int main(int argv, char **args){
+	printf("test 1;\n");
 	Application* app = malloc(sizeof(Application));
 	MALLOC_CHECK(app);
 

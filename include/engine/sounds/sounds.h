@@ -1,2 +1,3 @@
 #pragma once
-#include <SDL_mixer>
+#include <libs/SDL2/SDL_mixer.h>
+
