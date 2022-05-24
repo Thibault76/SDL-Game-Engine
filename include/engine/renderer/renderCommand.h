@@ -11,8 +11,7 @@ typedef enum{
 } EngineRenderCommandType;
 
 typedef struct{
-	// TODO : replace with an array of vec2
-	void* data; // a pointer to the preallocated dynamic array or texture struct
+	void *data;
 	uint16_t dataSize;
 	EngineRenderCommandType type;
 } EngineRenderCommand;

@@ -1,19 +1,32 @@
 #pragma once
 
 #include "../core.h"
-#include "../dataStructure/queue.h"
+#include "../window.h"
+#include "../dataStructure/preprossed_queue_test.h"
 #include "../dataStructure/floatDynamicArray.h"
 #include "renderCommand.h"
 
 typedef struct{
-	QueueStruct* renderQueues[2]; // a queue of render commands
-	uint8_t currentQueue;
+	QueuePreproStructTest* renderQueues[2]; // a queue of render commands
+	
+	 currentQueue;
+
 	EngineFloatDynamicArray* linesBuffer;
 	EngineFloatDynamicArray* pointsBuffer;
 	EngineFloatDynamicArray* rectsBuffer;
+
+	void* nativeRunderer;
+	EngineWindow* window;
 } EngineRenderer;
 
-EngineRenderer* EngineRendererCreate(void);
+/**
+ * @brief create and initialize a renderer
+ * @param renderCommandCount 
+ * @return EngineRenderer* 
+ */
+EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderCommandCount);
+
+void EngineRendererDestroy(EngineRenderer* renderer);
 
 void EngineRendererClear(EngineRenderer *renderer);
 void EngineRendererSetClearColor(EngineRenderer *renderer, uint8_t r, uint8_t g, uint8_t b);
@@ -21,3 +34,8 @@ void EngineRendererSetDrawColor(EngineRenderer *renderer, uint8_t r, uint8_t g, 
 void EngineRendererDrawPoint(EngineRenderer *renderer, float x1, float y1);
 void EngineRendererDrawLine(EngineRenderer *renderer, float x1, float y1, float x2, float y2);
 void EngineRendererDrawRect(EngineRenderer *renderer, float x1, float y1, float width, float height);
+
+QueuePreproStructTest* EngineRendererGetCurrentQueue(EngineRenderer *renderer);
+
+void EngineRendererSwap(EngineRenderer *renderer);
+void EngineRendererDraw(EngineRenderer *renderer);
