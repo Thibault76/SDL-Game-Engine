@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "engine/dataStructure/queue.h"
 
+/*--------------------------------------------*/
+
 Bool EngineQueueIsEmpty(QueueStruct *queue){
     if(queue->first == NULL && queue->last == NULL)
         return true;
