@@ -2,14 +2,13 @@
 
 #include "../core.h"
 #include "../window.h"
-#include "../dataStructure/preprossed_queue_test.h"
+#include "../dataStructure/circularQueue.h"
 #include "../dataStructure/floatDynamicArray.h"
 #include "renderCommand.h"
 
 typedef struct{
-	QueuePreproStructTest* renderQueues[2]; // a queue of render commands
-	
-	 currentQueue;
+	EngineCircularQueue* renderQueues[2]; // a queue of render commands
+	uint8_t currentQueue;
 
 	EngineFloatDynamicArray* linesBuffer;
 	EngineFloatDynamicArray* pointsBuffer;
@@ -35,7 +34,7 @@ void EngineRendererDrawPoint(EngineRenderer *renderer, float x1, float y1);
 void EngineRendererDrawLine(EngineRenderer *renderer, float x1, float y1, float x2, float y2);
 void EngineRendererDrawRect(EngineRenderer *renderer, float x1, float y1, float width, float height);
 
-QueuePreproStructTest* EngineRendererGetCurrentQueue(EngineRenderer *renderer);
+EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer *renderer);
 
 void EngineRendererSwap(EngineRenderer *renderer);
 void EngineRendererDraw(EngineRenderer *renderer);

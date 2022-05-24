@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <libs/SDL2/SDL.h>
 
-EngineRenderCommand* EngineRendererPushCommand(QueuePreproStructTest *queue){
+EngineRenderCommand* EngineRendererPushCommand(EngineCircularQueue *queue){
 	assert(queue != NULL && "push into a NULL queue");
-	void** value = EngineQueueProproTestPushNULL(queue);
+	void** value = EngineCircularQueuePushNULL(queue);
 
 	if (value){
 		return *value; // if the value is not NULL it's supposly set to a render command
@@ -43,7 +43,7 @@ EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderComman
 	return renderer;
 }
 
-void EngineRendererDestroyQueue(QueuePreproStructTest *queue){
+void EngineRendererDestroyQueue(EngineCircularQueue *queue){
 	QueueElement *element = queue->first;
 	
 	while (element != queue->end){
@@ -102,7 +102,7 @@ void EngineRendererDrawRect(EngineRenderer *renderer, float x1, float y1, float 
 
 }
 
-QueuePreproStructTest* EngineRendererGetCurrentQueue(EngineRenderer *renderer){
+EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer *renderer){
 	return renderer->renderQueues[renderer->currentQueue];
 }
 
