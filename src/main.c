@@ -8,6 +8,7 @@ typedef struct{
 } Application;
 
 int main(int argv, char **args){
+	/*
 	Application* app = malloc(sizeof(Application));
 	MALLOC_CHECK(app);
 
@@ -20,6 +21,27 @@ int main(int argv, char **args){
 	}
 
 	free(app);
+	*/
+
+	QueuePreproStruct *q = EngineQueuePreproNew(3, 5);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPushElement(q, (void*)3);
+	EngineQueuePreproPushElement(q, (void*)5);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPrintUsedElementsInt(q);
+	EngineQueuePreproPushElement(q, (void*)7);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPrintUsedElementsInt(q);
+	EngineQueuePreproPushElement(q, (void*)10);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPrintUsedElementsInt(q);
+	EngineQueuePreproPopElement(q);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPrintUsedElementsInt(q);
+	EngineQueuePreproPopElement(q);
+	EngineQueuePreproPrintAllElementsInt(q);
+	EngineQueuePreproPrintUsedElementsInt(q);
+	EngineQueuePreproClearAll(q);
 
 	return EXIT_SUCCESS;
 }
