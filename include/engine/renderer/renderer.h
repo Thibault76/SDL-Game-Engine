@@ -13,5 +13,11 @@ typedef struct{
 	EngineFloatDynamicArray* rectsBuffer;
 } EngineRenderer;
 
-EngineRenderer* EngineRenderCreate(void);
+EngineRenderer* EngineRendererCreate(void);
 
+void EngineRendererClear(EngineRenderer *renderer);
+void EngineRendererSetClearColor(EngineRenderer *renderer, uint8_t r, uint8_t g, uint8_t b);
+void EngineRendererSetDrawColor(EngineRenderer *renderer, uint8_t r, uint8_t g, uint8_t b);
+void EngineRendererDrawPoint(EngineRenderer *renderer, float x1, float y1);
+void EngineRendererDrawLine(EngineRenderer *renderer, float x1, float y1, float x2, float y2);
+void EngineRendererDrawRect(EngineRenderer *renderer, float x1, float y1, float width, float height);

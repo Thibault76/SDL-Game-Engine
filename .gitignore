@@ -1,2 +1,5 @@
 *.o
 .vscode
+libSDL2.dll.a
+libSDL2main.a
+SDL2.dll
