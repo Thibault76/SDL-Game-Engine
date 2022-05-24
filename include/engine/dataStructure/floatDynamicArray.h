@@ -27,7 +27,7 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray 
  * @param arr the destination array
  * @param value the value to insert
  */
-void EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value);
+void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value);
 
 /**
  * @brief get the raw array

@@ -20,7 +20,7 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray 
 	free(arr);
 }
 
-void EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
+void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
 	assert(arr != NULL && "cannot insert data in a NULL dynamic array");
 	if (arr->used+1 == arr->size){
 		arr->size *= 2;
@@ -28,7 +28,9 @@ void EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
 		MALLOC_CHECK(arr->content);
 	}
 	arr->content[arr->used] = value;
+	void* data = &arr->content[arr->used];
 	arr->used++;
+	return data;
 }
 
 float* EngineFloatDynamicArrayGetData(EngineFloatDynamicArray* arr){

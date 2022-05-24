@@ -7,9 +7,9 @@
  * 
  */
 typedef struct EngineCircularQueue{
-	QueueElement *first;
-	QueueElement *last; // the last element of the 'fake' queue
-	QueueElement *end; // the true last element of the queue
+	QueueElement* first;
+	QueueElement* last; // the last element of the 'fake' queue
+	QueueElement* end; // the true last element of the queue
 	uint32_t nbElement;
 	uint32_t nbUseElement;
 	uint32_t step;
@@ -28,7 +28,7 @@ EngineCircularQueue *EngineCircularQueueCreate(int initNbE, int step);
  * @param q Preprossed structural queue
  * @return QueueElement* 
  */
-void EngineCircularQueueAllocElement(EngineCircularQueue *q);
+void EngineCircularQueueAllocElement(EngineCircularQueue* q);
 
 
 /**
@@ -36,7 +36,7 @@ void EngineCircularQueueAllocElement(EngineCircularQueue *q);
  * @param q Preprossed structural queue
  * @return QueueElement* 
  */
-void EngineCircularQueueFreeElement(EngineCircularQueue *q);
+void EngineCircularQueueFreeElement(EngineCircularQueue* q);
 
 /**
  * @brief Return 1 if the preprossed queue is empty else return 0
@@ -44,14 +44,20 @@ void EngineCircularQueueFreeElement(EngineCircularQueue *q);
  * @param q Preprossed structural queue
  * @return Bool 
  */
-Bool EngineCircularQueueIsEmpty(EngineCircularQueue *q);
+Bool EngineCircularQueueIsEmpty(EngineCircularQueue* q);
 
 /**
  * @brief push the given element at the end of the queue
  * @param q Preprossed structural queue
  * @param value the value to store /!\ it will store the pointer and not a copy ! the user is responsable of memory leaks /!\
  */
-void EngineQueueProproTestPush(EngineCircularQueue* q, void* value);
+void EngineCircularQueuePush(EngineCircularQueue* q, void* value);
+
+/**
+ * @brief push the given element at the end of the queue
+ * @param q Preprossed structural queue
+ */
+void** EngineCircularQueuePushNULL(EngineCircularQueue* q);
 
 /**
  * @brief Delete the first queue element
@@ -59,7 +65,7 @@ void EngineQueueProproTestPush(EngineCircularQueue* q, void* value);
  * @param q Preprossed structural queue
  * @return void* the value of the last first element
  */
-void* EngineCircularQueuePop(EngineCircularQueue *q);
+void* EngineCircularQueuePop(EngineCircularQueue* q);
 
 /**
  * @brief Delete all queue
@@ -67,12 +73,24 @@ void* EngineCircularQueuePop(EngineCircularQueue *q);
  * @param q Preprossed structural queue
  * @return EngineCircularQueue* return NULL pointer
  */
-EngineCircularQueue *EngineCircularQueueDestroy(EngineCircularQueue *q);
+EngineCircularQueue *EngineCircularQueueDestroy(EngineCircularQueue* q);
 
 /**
  * @brief get the first element of the list
  * @param q 
  * @return QueueElement* 
  */
-QueueElement* EngineQueuePreproGetBegin(EngineCircularQueue *q);
-QueueElement* EngineQueuePreproGetEnd(EngineCircularQueue *q);
+QueueElement* EngineCircularQueueGetBegin(EngineCircularQueue* q);
+
+/**
+ * @brief get the last element of the list /!\ not a valid output /!\
+ * @param q
+ * @return QueueElement* 
+ */
+QueueElement* EngineCircularQueueGetEnd(EngineCircularQueue* q);
+
+/**
+ * @brief clear the the count of element in the queue
+ * 
+ */
+void EngineCircularQueueClear(EngineCircularQueue* q);

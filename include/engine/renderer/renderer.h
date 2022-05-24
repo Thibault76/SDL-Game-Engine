@@ -10,9 +10,8 @@ typedef struct{
 	EngineCircularQueue* renderQueues[2]; // a queue of render commands
 	uint8_t currentQueue;
 
-	EngineFloatDynamicArray* linesBuffer;
-	EngineFloatDynamicArray* pointsBuffer;
-	EngineFloatDynamicArray* rectsBuffer;
+	EngineFloatDynamicArray* buffers[2];
+	EngineCircularQueue* batchRenderQueue;
 
 	void* nativeRunderer;
 	EngineWindow* window;
@@ -27,14 +26,14 @@ EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderComman
 
 void EngineRendererDestroy(EngineRenderer* renderer);
 
-void EngineRendererClear(EngineRenderer *renderer);
-void EngineRendererSetClearColor(EngineRenderer *renderer, uint8_t r, uint8_t g, uint8_t b);
-void EngineRendererSetDrawColor(EngineRenderer *renderer, uint8_t r, uint8_t g, uint8_t b);
-void EngineRendererDrawPoint(EngineRenderer *renderer, float x1, float y1);
-void EngineRendererDrawLine(EngineRenderer *renderer, float x1, float y1, float x2, float y2);
-void EngineRendererDrawRect(EngineRenderer *renderer, float x1, float y1, float width, float height);
+void EngineRendererClear(EngineRenderer* renderer);
+void EngineRendererSetDrawColor(EngineRenderer* renderer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+void EngineRendererDrawPoint(EngineRenderer* renderer, float x, float y);
+void EngineRendererDrawLine(EngineRenderer* renderer, float x1, float y1, float x2, float y2);
+void EngineRendererDrawRect(EngineRenderer* renderer, float x, float y, float width, float height);
 
-EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer *renderer);
+EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer* renderer);
+EngineFloatDynamicArray* EngineRendererGetCurrentBuffer(EngineRenderer* renderer);
 
-void EngineRendererSwap(EngineRenderer *renderer);
-void EngineRendererDraw(EngineRenderer *renderer);
+void EngineRendererSwap(EngineRenderer* renderer);
+void EngineRendererDraw(EngineRenderer* renderer);

@@ -3,17 +3,18 @@
 #include "../core.h"
 
 typedef enum{
+	ENGINE_RENDER_COMMAND_NONE,
 	ENGINE_RENDER_COMMAND_DRAW_POINTS,
 	ENGINE_RENDER_COMMAND_DRAW_LINES,
 	ENGINE_RENDER_COMMAND_DRAW_RECTS,
 	ENGINE_RENDER_COMMAND_CLEAR,
-	ENGINE_RENDER_COMMAND_SET_CLEAR_COLOR,
+	ENGINE_RENDER_COMMAND_SET_DRAW_COLOR,
 } EngineRenderCommandType;
 
 typedef struct{
 	void *data;
-	uint16_t dataSize;
 	EngineRenderCommandType type;
+	uint16_t count;
 } EngineRenderCommand;
 
 typedef struct{

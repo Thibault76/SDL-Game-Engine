@@ -67,7 +67,7 @@ Bool EngineCircularQueueIsEmpty(EngineCircularQueue *q){
 
 /*--------------------------------------------*/
 
-void EngineQueueProproTestPush(EngineCircularQueue* q, void* value){
+void EngineCircularQueuePush(EngineCircularQueue* q, void* value){
 	assert(q != NULL && "cannot push elements in a NULL queue");
 
 	if (q->nbUseElement+1 >= q->nbElement){
@@ -88,10 +88,34 @@ void EngineQueueProproTestPush(EngineCircularQueue* q, void* value){
 
 /*--------------------------------------------*/
 
+void** EngineCircularQueuePushNULL(EngineCircularQueue* q){
+	assert(q != NULL && "cannot push elements in a NULL queue");
+
+	if (q->nbUseElement+1 >= q->nbElement){
+		EngineCircularQueueAllocSteps(q);
+	}
+
+	void** value;
+
+	if (!q->last){
+		q->last = q->first;
+		value = &q->first->value;
+	} else {
+		value = &q->last->value;
+	}
+	
+	q->last = q->last->next;
+
+	q->nbUseElement++;
+	*value = NULL;
+	return value;
+}
+
+/*--------------------------------------------*/
+
 void* EngineCircularQueuePop(EngineCircularQueue *q){
 	assert(q != NULL && "cannot pop elements in a NULL queue");
-	if(EngineCircularQueueIsEmpty(q))
-		return NULL;
+	if(EngineCircularQueueIsEmpty(q)) return NULL;
 
 	void* value = q->first->value;
 	QueueElement* temp = q->first->next;
@@ -119,12 +143,22 @@ EngineCircularQueue *EngineCircularQueueDestroy(EngineCircularQueue *q){
 
 /*--------------------------------------------*/
 
-QueueElement* EngineQueuePreproGetBegin(EngineCircularQueue *q){
+QueueElement* EngineCircularQueueGetBegin(EngineCircularQueue *q){
+	assert(q != NULL && "cannot get the first element of a NULL queue");
 	return q->last != NULL ? q->first : NULL;
 }
 
 /*--------------------------------------------*/
 
-QueueElement* EngineQueuePreproGetEnd(EngineCircularQueue *q){
+QueueElement* EngineCircularQueueGetEnd(EngineCircularQueue *q){
+	assert(q != NULL && "cannot get the last element of a NULL queue");
 	return q->last;
+}
+
+/*--------------------------------------------*/
+
+void EngineCircularQueueClear(EngineCircularQueue* q){
+	assert(q != NULL && "cannot clear a NULL queue");
+	q->nbUseElement = 0;
+	q->last = q->first;
 }
