@@ -8,8 +8,9 @@
 typedef struct QueuePreproStruct{
     QueueElement *first;
     QueueElement *last;
+    QueueElement *lastUse;
     int nbElement;
-    int nbUseElement;
+    int nbUsedElement;
     int step;
 }QueuePreproStruct;
 
@@ -46,11 +47,11 @@ Bool EngineQueuePreproIsEmpty(QueuePreproStruct *q);
 void EngineQueuePreproAddStepElement(QueuePreproStruct *q);
 
 /**
- * @brief Delete the first queue element
+ * @brief Delete definitively the first queue element
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproPopElement(QueuePreproStruct *q);
+void EngineQueuePreproPopDefElement(QueuePreproStruct *q);
 
 /**
  * @brief Delete all queue
@@ -59,3 +60,32 @@ void EngineQueuePreproPopElement(QueuePreproStruct *q);
  * @return QueuePreproStruct* return NULL pointer
  */
 QueuePreproStruct *EngineQueuePreproClearAll(QueuePreproStruct *q);
+
+/**
+ * @brief Delete the first queue element
+ * 
+ * @param q Preprossed structural queue
+ */
+void EngineQueuePreproPopElement(QueuePreproStruct *q);
+
+/**
+ * @brief Add use element to preprossed queue
+ * 
+ * @param q Preprossed structural queue
+ * @param x Value saved in element of queue
+ */
+void EngineQueuePreproPushElement(QueuePreproStruct *q, void *x);
+
+/**
+ * @brief Print all elements in preprossed queue like int
+ * 
+ * @param q Preprossed structural queue
+ */
+void EngineQueuePreproPrintAllElementsInt(QueuePreproStruct *q);
+
+/**
+ * @brief Print only use elements in preprossed queue like int
+ * 
+ * @param q Preprossed structural queue
+ */
+void EngineQueuePreproPrintUsedElementsInt(QueuePreproStruct *q);
