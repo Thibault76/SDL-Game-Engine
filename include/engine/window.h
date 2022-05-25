@@ -264,3 +264,15 @@ void EngineWindowUpdate(EngineWindow* window);
  * @param callback the callback function
  */
 void EngineWindowSetEventCallback(EngineWindow* window, void(*callback)(EngineEvent*));
+
+/**
+ * @brief pause the program durin the given delay
+ * @param delayMilisecond the time to sleep (in miliseconds)
+ */
+void EngineSleep(float delayMilisecond);
+
+/**
+ * @brief get the amount of miliseconds since the creation of the first window
+ * @return uint64_t 
+ */
+uint64_t EngineGetTicks();

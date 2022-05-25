@@ -43,6 +43,7 @@ typedef struct{
 	Bool handled; // if the event has been handled or not
 
 	void* data;
+	void* window;
 } EngineEvent;
 
 /**
@@ -56,5 +57,3 @@ EngineEvent* EngineEventCreate(void);
  * @param event the event to destroy
  */
 void EngineEventDestroy(EngineEvent* event);
-
-#include "applicationEvent.h"

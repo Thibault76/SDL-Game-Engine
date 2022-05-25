@@ -175,7 +175,6 @@ void EngineRendererSwap(EngineRenderer* renderer){
 void EngineRenderPoints(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	
 	SDL_RenderDrawPointsF(renderer->nativeRunderer, command->data, command->count);
 }
 

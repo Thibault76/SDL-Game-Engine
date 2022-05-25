@@ -123,9 +123,8 @@ void EngineApplicationRun(EngineApplication* app){
 		EngineRendererSetDrawColor(app->renderer, 0, 0, 0, 255);
 		EngineRendererClear(app->renderer);
 
-		_sleep(16);
+		EngineSleep(16);
 		EngineAppRenderThreadFinished(app);
-
 	}
 
 	pthread_join(app->gameThread, NULL);
