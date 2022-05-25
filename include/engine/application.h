@@ -29,6 +29,14 @@ typedef struct{
  */
 EngineApplication* EngineApplicationCreate(void);
 
+/**
+ * @brief clear and destroy the given application from memory
+ * @param app the application to destroy
+ */
 void EngineApplicationDestroy(EngineApplication* app);
 
+/**
+ * @brief start the execution of the application
+ * @param app the application to execute
+ */
 void EngineApplicationRun(EngineApplication* app);

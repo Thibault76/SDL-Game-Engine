@@ -142,6 +142,17 @@ void EngineRendererDrawRect(EngineRenderer* renderer, float x, float y, float wi
 	EngineFloatDynamicArrayInsert(buffer, height);
 }
 
+void EngineRendererDrawFilledRect(EngineRenderer* renderer, float x, float y, float width, float height){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_FILLED_RECTS;
+	command->data = EngineFloatDynamicArrayInsert(buffer, x);
+	EngineFloatDynamicArrayInsert(buffer, y);
+	EngineFloatDynamicArrayInsert(buffer, width);
+	EngineFloatDynamicArrayInsert(buffer, height);
+}
+
 EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer* renderer){
 	assert(renderer != NULL && "cannot get the current queue of a NULL renderer");
 	return renderer->renderQueues[renderer->currentQueue];
@@ -191,14 +202,18 @@ void EngineRenderLines(EngineRenderer* renderer, EngineRenderCommand* command){
 void EngineRenderRects(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	
 	SDL_RenderDrawRectsF(renderer->nativeRunderer, command->data, command->count);
+}
+
+void EngineRenderFilledRects(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
+	SDL_RenderFillRectsF(renderer->nativeRunderer, command->data, command->count);
 }
 
 void EngineRenderClear(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	
 	SDL_RenderClear(renderer->nativeRunderer);
 }
 
@@ -255,6 +270,7 @@ void EngineRendererDraw(EngineRenderer* renderer){
 			case ENGINE_RENDER_COMMAND_DRAW_LINES_STRIP: EngineRenderLinesStrip(renderer, data); break;
 			case ENGINE_RENDER_COMMAND_DRAW_RECTS: EngineRenderRects(renderer, data); break;
 			case ENGINE_RENDER_COMMAND_CLEAR: EngineRenderClear(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_FILLED_RECTS: EngineRenderFilledRects(renderer, data); break;
 			case ENGINE_RENDER_COMMAND_SET_DRAW_COLOR: EngineRenderSetDrawColor(renderer, data); break;
 		}
 	}
