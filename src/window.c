@@ -6,6 +6,8 @@
 // engine
 #include "engine/window.h"
 #include "engine/events/mouseEvent.h"
+#include "engine/events/applicationEvent.h"
+#include "engine/events/keyEvent.h"
 
 // libs
 #include <libs/SDL2/SDL.h>
@@ -48,11 +50,7 @@ SDL_Window* destroyWindow(SDL_Window* window){
 
 EngineWindowDef* EngineWindowCreateDef(void){
 	EngineWindowDef *def = malloc(sizeof(EngineWindowDef));
-	
-	if (!def){
-		fprintf(stderr, "alloc Error");
-		exit(EXIT_FAILURE);
-	}
+	MALLOC_CHECK(def);
 
 	def->width = 1080;
 	def->height = 720;
@@ -68,30 +66,22 @@ EngineWindow* EngineWindowCreate(EngineWindowDef* def){
 	assert(def != NULL && "cannot create a window from a NULL definition");
 	EngineWindow* window;
 	window = malloc(sizeof(EngineWindow));
-
-	if (!window){
-		fprintf(stderr, "alloc Error");
-		exit(EXIT_FAILURE);
-	}
+	MALLOC_CHECK(window);
 
 	window->nativeWindow = (void*)createWindow((def->title != NULL ? def->title : "SDL Game Engine"), (int)def->width, (int)def->height);
 	
 	const char* title = SDL_GetWindowTitle(window->nativeWindow);
-	
 	window->title = malloc(sizeof(char) * strlen(title));
 	strcpy(window->title, title);
 
 	window->width = def->width;
 	window->height = def->height;
-
 	window->icon = NULL;
-
+	window->userData = NULL;
 	int x, y;
 	SDL_GetWindowPosition(window->nativeWindow, &x, &y);
-
 	window->x = x;
 	window->y = y;
-
 	EngineWindowSetOpacity(window, 1.0);
 	EngineWindowSetMinimalSize(window, 0, 0);
 	EngineWindowSetMaximalSize(window, (uint32_t)-1, (uint32_t)-1);
@@ -291,6 +281,7 @@ void EngineWindowQuitEvent(EngineWindow* window){
 
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_CLOSED;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -308,6 +299,7 @@ void EngineWindowResizedEvent(EngineWindow* window, uint32_t width, uint32_t hei
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_RESIZED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -325,6 +317,7 @@ void EngineWindowMovedEvent(EngineWindow* window, uint32_t x, uint32_t y){
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_MOVED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -338,6 +331,7 @@ void EngineWindowFocusedEvent(EngineWindow* window){
 		
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_FOCUSED;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -351,6 +345,7 @@ void EngineWindowFocusLostEvent(EngineWindow* window){
 
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WiNDOW_LOST_FOCUS;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -364,6 +359,7 @@ void EngineWindowMinimizedEvent(EngineWindow* window){
 
 		event->category = ENGINE_EVENT_CATEGORY_INPUT| ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_MINIMIZED;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -377,6 +373,7 @@ void EngineWindowMaximizedEvent(EngineWindow* window){
 
 		event->category = ENGINE_EVENT_CATEGORY_INPUT| ENGINE_EVENT_CATEGORY_APPLICATION;
 		event->type = ENGINE_EVENT_TYPE_WINDOW_MAXIMIZED;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -394,6 +391,7 @@ void EngineMouseMovedEvent(EngineWindow* window, uint32_t x, uint32_t y){
 		event->category = ENGINE_EVENT_CATEGORY_MOUSE | ENGINE_EVENT_CATEGORY_INPUT;
 		event->type = ENGINE_EVENT_TYPE_MOUSE_MOVED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -410,6 +408,7 @@ void EngineMouseButtonPressedEvent(EngineWindow* window, EngineMouseButton butto
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
 		event->type = ENGINE_EVENT_TYPE_MOUSE_BUTTON_PRESSED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -426,6 +425,7 @@ void EngineMouseButtonReleasedEvent(EngineWindow* window, EngineMouseButton butt
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
 		event->type = ENGINE_EVENT_TYPE_MOUSE_BUTTON_RELEASED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
@@ -442,11 +442,45 @@ void EngineMouseScrolledEvent(EngineWindow* window, float yOffset){
 		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
 		event->type = ENGINE_EVENT_TYPE_MOUSE_SCROLLED;
 		event->data = data;
+		event->userData = window->userData;
 		window->eventCallback(event);
 
 		EngineEventDestroy(event);
 	}
+}
 
+void EngineKeyPressedEvent(EngineWindow* window, EngineKey key){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineKeyEventPressed* data = EngineKeyEventPressedCreate();
+
+		data->key = key;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_SCROLLED;
+		event->data = data;
+		event->userData = window->userData;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
+}
+
+void EngineKeyReleasedEvent(EngineWindow* window, EngineKey key){
+	assert(window != NULL && "cannot create an event with a NULL window");
+	if (window->eventCallback){
+		EngineEvent* event = EngineEventCreate();
+		EngineKeyEventReleased* data = EngineKeyEventReleasedCreate();
+
+		data->key = key;
+		event->category = ENGINE_EVENT_CATEGORY_INPUT | ENGINE_EVENT_CATEGORY_MOUSE;
+		event->type = ENGINE_EVENT_TYPE_MOUSE_SCROLLED;
+		event->data = data;
+		event->userData = window->userData;
+		window->eventCallback(event);
+
+		EngineEventDestroy(event);
+	}
 }
 
 void EngineWindowUpdate(EngineWindow* window){
@@ -465,7 +499,8 @@ void EngineWindowUpdate(EngineWindow* window){
 			case SDL_MOUSEMOTION: EngineMouseMovedEvent(window, (uint32_t)e.motion.x, (uint32_t)e.motion.y); break;
 			case SDL_MOUSEBUTTONDOWN: EngineMouseButtonPressedEvent(window, e.button.button); break;
 			case SDL_MOUSEWHEEL: EngineMouseScrolledEvent(window, e.wheel.preciseY); break;
-
+			case SDL_KEYDOWN: EngineKeyPressedEvent(window, e.key.keysym.scancode); break;
+			case SDL_KEYUP: EngineKeyReleasedEvent(window, e.key.keysym.scancode); break;
 		}
 	}
 }
@@ -473,4 +508,12 @@ void EngineWindowUpdate(EngineWindow* window){
 void EngineWindowSetEventCallback(EngineWindow* window, void(*callback)(EngineEvent*)){
 	assert(window != NULL && "cannot set the callback of a NULL window");
 	window->eventCallback = callback;
+}
+
+void EngineSleep(float delayMilisecond){
+	SDL_Delay(delayMilisecond);
+}
+
+uint64_t EngineGetTicks(){
+	SDL_GetTicks64();
 }
