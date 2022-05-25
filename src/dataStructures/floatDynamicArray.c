@@ -16,8 +16,11 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray 
 	assert(arr != NULL && "cannot destroy a NULL dynamic array");
 	if (arr->size){
 		free(arr->content);
+		arr->content = NULL;
 	}
 	free(arr);
+	arr = NULL;
+	return arr;
 }
 
 void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){

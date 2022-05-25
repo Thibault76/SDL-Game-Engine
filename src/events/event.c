@@ -6,7 +6,7 @@
 #include <assert.h>
 
 EngineEvent* EngineEventCreate(void){
-	EngineEvent* event = malloc(sizeof(Event*));
+	EngineEvent* event = malloc(sizeof(EngineEvent));
 
 	if (!event){
 		fprintf(stderr, "malloc Error");
@@ -22,6 +22,10 @@ EngineEvent* EngineEventCreate(void){
 
 void EngineEventDestroy(EngineEvent* event){
 	assert(event != NULL && "cannot destroy a NULL event");
-	if (event->data) free(event->data);
-	// free(event);
+	if (event->data){
+		free(event->data);
+		event->data = NULL;
+	}
+	event->userData = NULL;
+	free(event);
 }

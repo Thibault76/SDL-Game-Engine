@@ -30,12 +30,17 @@ EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderComman
 	for (uint8_t queue=0; queue<2; queue++){
 		renderer->renderQueues[queue] = EngineCircularQueueCreate(renderCommandCount, 10);
 		for (uint32_t command=0; command<renderCommandCount; command++){
-			EngineRendererPushCommand(renderer->renderQueues[queue]);
+			EngineCircularQueue *renderQueue = renderer->renderQueues[queue];
+			QueueElement* element = renderQueue->first;
+			while (element){
+				element->value = malloc(sizeof(EngineRenderCommand));
+				element = element->next;
+			}
 		}
-		renderer->buffers[queue] = EngineFloatDynamicArrayCreate(250);
+		renderer->buffers[queue] = EngineFloatDynamicArrayCreate(renderCommandCount * 3);
 	}
 	renderer->currentQueue = 0;
-	renderer->batchRenderQueue = EngineCircularQueueCreate(250, 10);
+	renderer->batchRenderQueue = EngineCircularQueueCreate(renderCommandCount, 10);
 
 	renderer->nativeRunderer = SDL_CreateRenderer(window->nativeWindow, -1, 0);
 	if (renderer->nativeRunderer == NULL){
@@ -48,10 +53,12 @@ EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderComman
 
 void EngineRendererDestroyQueue(EngineCircularQueue *queue){
 	QueueElement *element = queue->first;
-	
+	uint16_t i=0;
 	while (element != queue->end){
 		free(element->value);
+		element->value = NULL;
 		element = element->next;
+		i++;
 	}
 
 	EngineCircularQueueDestroy(queue);
@@ -66,9 +73,10 @@ void EngineRendererDestroy(EngineRenderer* renderer){
 		EngineFloatDynamicArrayDestroy(renderer->buffers[queue]);
 	}
 
-	EngineRendererDestroyQueue(renderer->batchRenderQueue);
+	EngineCircularQueueDestroy(renderer->batchRenderQueue);
 	SDL_DestroyRenderer(renderer->nativeRunderer);
 	free(renderer);
+	renderer = NULL;
 }
 
 uint16_t EngineRenderergetRenderTypeSize(EngineRenderCommandType type){
@@ -258,7 +266,7 @@ void EngineRendererDraw(EngineRenderer* renderer){
 	EngineFloatDynamicArray* buffer = renderer->buffers[queueIndex];
 
 	EngineRenderBatchDrawCalls(renderer, renderer->renderQueues[queueIndex]);
-
+	
 	while (!EngineCircularQueueIsEmpty(queue)){
 		EngineRenderCommand* data = (EngineRenderCommand*)EngineCircularQueuePop(queue);
 		if (!data || data->type == ENGINE_RENDER_COMMAND_NONE) continue;
