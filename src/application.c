@@ -101,7 +101,6 @@ void EngineApplicationGameThread(void* appPtr){
 		EngineRendererSetDrawColor(app->renderer, 255, 0, 0, 255);
 		EngineRendererDrawLine(app->renderer, 10, 40, 90, 240);
 
-
 		EngineAppGameThreadFinished(app);
 		EngineAppWaitForRenderer(app);
 	}
