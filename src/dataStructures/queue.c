@@ -88,6 +88,7 @@ void EngineQueuePop(QueueStruct *queue){
         queue->first = queue->first->next;
 
     free(temp);
+	temp = NULL;
     queue->nbElement--;
 }
 
