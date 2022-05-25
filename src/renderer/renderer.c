@@ -7,7 +7,7 @@ EngineRenderCommand* EngineRendererPushCommand(EngineCircularQueue *queue){
 	assert(queue != NULL && "push into a NULL queue");
 	void** value = EngineCircularQueuePushNULL(queue);
 
-	if (value){
+	if (*value){
 		return *value; // if the value is not NULL it's supposly set to a render command
 	}
 	
@@ -120,6 +120,17 @@ void EngineRendererDrawLine(EngineRenderer* renderer, float x1, float y1, float 
 	EngineFloatDynamicArrayInsert(buffer, y2);
 }
 
+void EngineRendererDrawLineStrip(EngineRenderer* renderer, float x1, float y1, float x2, float y2){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_LINES_STRIP;
+	command->data = EngineFloatDynamicArrayInsert(buffer, x1);
+	EngineFloatDynamicArrayInsert(buffer, y1);
+	EngineFloatDynamicArrayInsert(buffer, x2);
+	EngineFloatDynamicArrayInsert(buffer, y2);
+}
+
 void EngineRendererDrawRect(EngineRenderer* renderer, float x, float y, float width, float height){
 	assert(renderer != NULL && "cannot draw on a NULL renderer");
 	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
@@ -147,44 +158,53 @@ void EngineRendererSwap(EngineRenderer* renderer){
 
 	EngineFloatDynamicArrayClear(EngineRendererGetCurrentBuffer(renderer));
 	EngineCircularQueueClear(EngineRendererGetCurrentQueue(renderer));
+	EngineCircularQueueClear(renderer->batchRenderQueue);
 }
 
-void EngineRenderPoints(EngineRenderer* renderer, EngineRenderCommand* command, EngineFloatDynamicArray* buffer){
+void EngineRenderPoints(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	assert(buffer != NULL && "cannot retrive draw data from a NULL buffer");
 	
 	SDL_RenderDrawPointsF(renderer->nativeRunderer, command->data, command->count);
 }
 
-void EngineRenderLines(EngineRenderer* renderer, EngineRenderCommand* command, EngineFloatDynamicArray* buffer){
+void EngineRenderLinesStrip(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	assert(buffer != NULL && "cannot retrive draw data from a NULL buffer");
-	
-	SDL_RenderDrawLinesF(renderer->nativeRunderer, command->data, command->count);
+	SDL_RenderDrawLinesF(renderer->nativeRunderer, (const SDL_FPoint*)command->data, command->count*2);
 }
 
-void EngineRenderRects(EngineRenderer* renderer, EngineRenderCommand* command, EngineFloatDynamicArray* buffer){
+void EngineRenderLines(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	assert(buffer != NULL && "cannot retrive draw data from a NULL buffer");
+
+	for (uint16_t i=0; i<command->count; i++){
+		float* data = command->data;
+		float x1 = data[i*4+0];
+		float y1 = data[i*4+1];
+		float x2 = data[i*4+2];
+		float y2 = data[i*4+3];
+		SDL_RenderDrawLineF(renderer->nativeRunderer, x1, y1, x2, y2);
+	}
+}
+
+void EngineRenderRects(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
 	
 	SDL_RenderDrawRectsF(renderer->nativeRunderer, command->data, command->count);
 }
 
-void EngineRenderClear(EngineRenderer* renderer, EngineRenderCommand* command, EngineFloatDynamicArray* buffer){
+void EngineRenderClear(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	assert(buffer != NULL && "cannot retrive draw data from a NULL buffer");
 	
 	SDL_RenderClear(renderer->nativeRunderer);
 }
 
-void EngineRenderSetDrawColor(EngineRenderer* renderer, EngineRenderCommand* command, EngineFloatDynamicArray* buffer){
+void EngineRenderSetDrawColor(EngineRenderer* renderer, EngineRenderCommand* command){
 	assert(renderer != NULL && "cannot draw from a NULL renderer");
 	assert(command != NULL && "cannot draw a line from a NULL render command");
-	assert(buffer != NULL && "cannot retrive draw data from a NULL buffer");
 	
 	float *color = command->data;
 	uint8_t r = color[0];
@@ -194,7 +214,7 @@ void EngineRenderSetDrawColor(EngineRenderer* renderer, EngineRenderCommand* com
 	SDL_SetRenderDrawColor(renderer->nativeRunderer, r, g, b, a);
 }
 
-void EngineRenderBatchDrawCalls(EngineCircularQueue* queue){
+void EngineRenderBatchDrawCalls(EngineRenderer* renderer, EngineCircularQueue* queue){
 	assert(queue != NULL && "invalid queue");
 	EngineRenderCommand *batchCommand = NULL;
 	EngineRenderCommandType currentBatchType = ENGINE_RENDER_COMMAND_NONE;
@@ -202,16 +222,17 @@ void EngineRenderBatchDrawCalls(EngineCircularQueue* queue){
 	QueueElement* it = EngineCircularQueueGetBegin(queue);
 	while (it != EngineCircularQueueGetEnd(queue)){
 		EngineRenderCommand* command = it->value;
+
+		if (!command) continue;
 		
 		if (command->type == currentBatchType && batchCommand){
 			batchCommand->count++;
 			it = it->next;
 			continue;
-
-		} else {
-			batchCommand = command;
 		}
-		EngineCircularQueuePush(queue, command);
+
+		batchCommand = command;
+		EngineCircularQueuePush(renderer->batchRenderQueue, command);
 		it = it->next;
 	}
 }
@@ -222,19 +243,21 @@ void EngineRendererDraw(EngineRenderer* renderer){
 	EngineCircularQueue* queue = renderer->batchRenderQueue;
 	EngineFloatDynamicArray* buffer = renderer->buffers[queueIndex];
 
-	EngineRenderBatchDrawCalls(renderer->renderQueues[queueIndex]);
+	EngineRenderBatchDrawCalls(renderer, renderer->renderQueues[queueIndex]);
 
 	while (!EngineCircularQueueIsEmpty(queue)){
 		EngineRenderCommand* data = (EngineRenderCommand*)EngineCircularQueuePop(queue);
 		if (!data || data->type == ENGINE_RENDER_COMMAND_NONE) continue;
 
 		switch (data->type){
-			case ENGINE_RENDER_COMMAND_DRAW_POINTS: EngineRenderPoints(renderer, data, buffer); break;
-			case ENGINE_RENDER_COMMAND_DRAW_LINES: EngineRenderLines(renderer, data, buffer); break;
-			case ENGINE_RENDER_COMMAND_DRAW_RECTS: EngineRenderRects(renderer, data, buffer); break;
-			case ENGINE_RENDER_COMMAND_CLEAR: EngineRenderClear(renderer, data, buffer); break;
-			case ENGINE_RENDER_COMMAND_SET_DRAW_COLOR: EngineRenderSetDrawColor(renderer, data, buffer); break;
+			case ENGINE_RENDER_COMMAND_DRAW_POINTS: EngineRenderPoints(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_LINES: EngineRenderLines(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_LINES_STRIP: EngineRenderLinesStrip(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_RECTS: EngineRenderRects(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_CLEAR: EngineRenderClear(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_SET_DRAW_COLOR: EngineRenderSetDrawColor(renderer, data); break;
 		}
 	}
-	
+
+	SDL_RenderPresent(renderer->nativeRunderer);
 }
