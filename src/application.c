@@ -4,6 +4,16 @@
 #include <assert.h>
 #include <pthread.h>
 
+void EngineAppOnEvent(EngineEvent* event){
+	EngineApplication* app = event->userData;
+
+	printf("event\n");
+	
+	switch (event->type){
+		case ENGINE_EVENT_TYPE_WINDOW_CLOSED: app->running = false;
+	}
+}
+
 void EngineApplicationCreateWindow(EngineApplication* app){
 	assert(app != NULL && "cannot create a window from a NULL application");
 	EngineWindowDef* def = EngineWindowCreateDef();
@@ -21,6 +31,9 @@ EngineApplication* EngineApplicationCreate(void){
 
 	EngineApplicationCreateWindow(app);
 	EngineApplicationCreateRenderer(app);
+
+	EngineWindowSetEventCallback(app->window, &EngineAppOnEvent);
+	app->window->userData = app;
 
 	app->gameThreadFinished = false;
 	app->renderThreadFinished = false;

@@ -43,7 +43,7 @@ typedef struct{
 	Bool handled; // if the event has been handled or not
 
 	void* data;
-	void* window;
+	void* userData;
 } EngineEvent;
 
 /**

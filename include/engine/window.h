@@ -24,6 +24,7 @@ typedef struct{
 	void (*eventCallback)(EngineEvent*);
 
 	void* nativeWindow; // the pointer to the SDL_Window
+	void* userData;
 } EngineWindow;
 
 

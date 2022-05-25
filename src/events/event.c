@@ -23,5 +23,5 @@ EngineEvent* EngineEventCreate(void){
 void EngineEventDestroy(EngineEvent* event){
 	assert(event != NULL && "cannot destroy a NULL event");
 	if (event->data) free(event->data);
-	free(event);
+	// free(event);
 }
