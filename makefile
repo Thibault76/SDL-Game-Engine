@@ -3,7 +3,7 @@ VERSION = 0.1.0
 
 # compiler
 CXX = gcc
-LIBSFLAGS = -lmingw32 -lSDL2main -lSDL2
+LIBSFLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer
 CFLAGS =
 DEFINES =
 INCLUDE = include/
