@@ -1,6 +1,7 @@
 // std
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 // engine
 #include "engine/window.h"
