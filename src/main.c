@@ -13,5 +13,11 @@ int main(int argv, char **args){
 	printVector(v);
 	v = EngineMathsFreeVector(v);
 
+	QueuePreproStruct *q;
+	q = EngineQueuePreproNew(3, 5);
+	EngineQueuePreproPushElement(q, 99);
+	EngineQueuePreproPrintAllElementsInt(q);
+	q = EngineQueuePreproClearAll(q);
+
 	return EXIT_SUCCESS;
 }

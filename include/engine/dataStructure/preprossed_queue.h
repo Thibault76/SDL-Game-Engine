@@ -1,6 +1,8 @@
 #pragma once
 #include "queue.h"
 
+#define EngineQueuePreproPushElement(q, x) _intern_EngineQueuePreproPushElement(q, (void*)x)
+
 /**
  * @brief preprossed queue structure
  * 
@@ -74,7 +76,7 @@ void EngineQueuePreproPopElement(QueuePreproStruct *q);
  * @param q Preprossed structural queue
  * @param x Value saved in element of queue
  */
-void EngineQueuePreproPushElement(QueuePreproStruct *q, void *x);
+void _intern_EngineQueuePreproPushElement(QueuePreproStruct *q, void *x);
 
 /**
  * @brief Print all elements in preprossed queue like int

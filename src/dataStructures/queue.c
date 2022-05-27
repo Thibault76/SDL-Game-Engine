@@ -51,7 +51,7 @@ void* EngineQueueLast(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void EngineQueuePush(QueueStruct *queue, void* x){
+void _intern_EngineQueuePush(QueueStruct *queue, void* x){
     QueueElement *element;
 
     element = malloc(sizeof(*element));
