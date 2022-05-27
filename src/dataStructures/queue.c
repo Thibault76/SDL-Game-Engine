@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "engine/dataStructure/queue.h"
+#include "engine/core.h"
 
 /*--------------------------------------------*/
 
@@ -15,6 +16,8 @@ Bool EngineQueueIsEmpty(QueueStruct *queue){
 
 QueueStruct *EngineQueueNew(void){
     QueueStruct *q = malloc(sizeof(QueueStruct));
+    MALLOC_CHECK(q);
+
     q->first = NULL;
     q->last = NULL;
     q->nbElement = 0;
@@ -52,11 +55,7 @@ void EngineQueuePush(QueueStruct *queue, void* x){
     QueueElement *element;
 
     element = malloc(sizeof(*element));
-
-    if(element == NULL){
-        fprintf(stderr, "Erreur : probleme allocation dynamique\n");
-        exit(EXIT_FAILURE);
-    }
+    MALLOC_CHECK(element);
 
     element->value = x;
     element->next = NULL;
