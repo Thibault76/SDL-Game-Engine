@@ -15,4 +15,4 @@ typedef unsigned long long uint64_t;
 typedef enum {false, true} Bool;
 
 #define BIT(x) (1 << x)
-#define MALLOC_CHECK(x) if (!x){fprintf(stderr, "malloc Error"); exit(EXIT_FAILURE);}
+#define MALLOC_CHECK(x) if (!x){fprintf(stderr, "file: %s, line: %d; "#x" MALLOC ERROR", __FILE__, __LINE__); exit(EXIT_FAILURE);}

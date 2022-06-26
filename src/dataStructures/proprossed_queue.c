@@ -4,6 +4,8 @@
 
 QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step){
     QueuePreproStruct *q = malloc(sizeof(QueuePreproStruct));
+    MALLOC_CHECK(q);
+
     q->first = NULL;
     q->last = NULL;
     q->lastUse = NULL;
@@ -22,8 +24,7 @@ QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step){
 
 void EnginequeuePreproAddElement(QueuePreproStruct *q){
     QueueElement *e = malloc(sizeof(QueueElement));
-    if(!e)
-        exit(EXIT_FAILURE);
+    MALLOC_CHECK(e);
 
     e->value = NULL;
 
@@ -99,7 +100,7 @@ void EngineQueuePreproPopElement(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproPushElement(QueuePreproStruct *q, void *x){
+void _intern_EngineQueuePreproPushElement(QueuePreproStruct *q, void *x){
     if(EngineQueuePreproIsEmpty(q))
         EngineQueuePreproAddStepElement(q);
     

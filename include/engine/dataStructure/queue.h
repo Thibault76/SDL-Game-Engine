@@ -1,6 +1,8 @@
 #pragma once
 #include "../core.h"
 
+#define EngineQueuePush(q, x) _intern_EngineQueuePush(q, (void*)x);
+
 /**
  * @brief element of a queue
  * 
@@ -58,7 +60,7 @@ void* EngineQueueLast(QueueStruct *queue);
  * @param queue queue
  * @param x element
  */
-void EngineQueuePush(QueueStruct *queue, void* x);
+void _intern_EngineQueuePush(QueueStruct *queue, void* x);
 
 /**
  * @brief Delete the first element of the queue
