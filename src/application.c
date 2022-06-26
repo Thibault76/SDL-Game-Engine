@@ -6,8 +6,6 @@
 
 void EngineAppOnEvent(EngineEvent* event){
 	EngineApplication* app = event->userData;
-
-	printf("event\n");
 	
 	switch (event->type){
 		case ENGINE_EVENT_TYPE_WINDOW_CLOSED: app->running = false;
@@ -22,7 +20,7 @@ void EngineApplicationCreateWindow(EngineApplication* app){
 
 void EngineApplicationCreateRenderer(EngineApplication* app){
 	assert(app != NULL && "cannot create a renderer from a NULL application");
-	app->renderer = EngineRendererCreate(app->window, 400);
+	app->renderer = EngineRendererCreate(app->window, 500);
 }
 
 EngineApplication* EngineApplicationCreate(void){
@@ -35,12 +33,11 @@ EngineApplication* EngineApplicationCreate(void){
 	EngineWindowSetEventCallback(app->window, &EngineAppOnEvent);
 	app->window->userData = app;
 
-	app->gameThreadFinished = false;
-	app->renderThreadFinished = false;
-	app->gameThreadLock = PTHREAD_MUTEX_INITIALIZER;
-	app->renderThreadLock = PTHREAD_MUTEX_INITIALIZER;
-	app->gameThreadCond = PTHREAD_COND_INITIALIZER;
-	app->renderThreadCond = PTHREAD_COND_INITIALIZER;
+	pthread_barrier_init(&app->gameThreadFinished, NULL, 2);
+
+	// ! ----------------------------------------------
+	pthread_barrier_init(&app->renderThreadFinished, NULL, 2);
+	// ! ----------------------------------------------
 
 	return app;
 }
@@ -50,85 +47,47 @@ void EngineApplicationDestroy(EngineApplication* app){
 
 	EngineRendererDestroy(app->renderer);
 	EngineWindowDestroy(app->window);
+
+	pthread_barrier_destroy(&app->gameThreadFinished);
+	pthread_barrier_destroy(&app->renderThreadFinished);
+
 	free(app);
 }
 
-void EngineAppWaitForRenderer(EngineApplication* app){
-	assert(app != NULL && "cannot wait for a NULL application");
-	pthread_mutex_lock(&app->renderThreadLock);
-	while (app->renderThreadFinished == false){
-		pthread_cond_wait(&app->renderThreadCond, &app->renderThreadLock);
-	}
-	pthread_mutex_unlock(&app->renderThreadLock);
-}
-
-void EngineAppWaitForGame(EngineApplication* app){
-	assert(app != NULL && "cannot wait for a NULL application");
-	pthread_mutex_lock(&app->gameThreadLock);
-	while (app->gameThreadFinished == false){
-		pthread_cond_wait(&app->gameThreadCond, &app->gameThreadLock);
-	}
-	pthread_mutex_unlock(&app->gameThreadLock);
-}
-
-void EngineAppGameThreadFinished(EngineApplication* app){
-	assert(app != NULL && "cannot finish a NULL application");
-	pthread_mutex_lock(&app->gameThreadLock);
-	app->gameThreadFinished = true;
-	pthread_cond_signal(&app->gameThreadCond);
-	pthread_mutex_unlock(&app->gameThreadLock);
-}
-
-void EngineAppRenderThreadFinished(EngineApplication* app){
-	assert(app != NULL && "cannot finish a NULL application");
-	pthread_mutex_lock(&app->renderThreadLock);
-	app->renderThreadFinished = true;
-	pthread_cond_signal(&app->renderThreadCond);
-	pthread_mutex_unlock(&app->renderThreadLock);
-}
-
-void EngineAppGameThreadBegin(EngineApplication* app){
-	assert(app != NULL && "cannot begin a NULL application");
-	pthread_mutex_lock(&app->gameThreadLock);
-	app->gameThreadFinished = false;
-	pthread_cond_signal(&app->gameThreadCond);
-	pthread_mutex_unlock(&app->gameThreadLock);
-}
-
-void EngineAppRenderThreadBegin(EngineApplication* app){
-	assert(app != NULL && "cannot begin a NULL application");
-	pthread_mutex_lock(&app->renderThreadLock);
-	app->renderThreadFinished = false;
-	pthread_cond_signal(&app->renderThreadCond);
-	pthread_mutex_unlock(&app->renderThreadLock);
-}
-
-void EngineApplicationGameThread(void* appPtr){
+void* EngineApplicationGameThread(void* appPtr){
 	EngineApplication* app = appPtr;
 	assert(app != NULL && "cannot run a NULL application");
 
+	EngineTexture* texture = EngineTextureCreateFromPath(app->renderer, "gradient.bmp");
+
 	while (app->running){
-		EngineAppRenderThreadBegin(app);
-		// update
+		uint64_t start = EngineGetTicks();
 
-		EngineRendererSetDrawColor(app->renderer, 255, 0, 0, 255);
-		EngineRendererDrawLine(app->renderer, 10, 40, 90, 240);
+		EngineRendererSetDrawColor(app->renderer, 255, 255, 255, 255);
+		for (int i=0; i<1000; i++){
+			EngineRendererDrawLine(app->renderer, rand() % 1080, rand() % 720, rand() % 1080, rand() % 720);
+		}
 
-		EngineAppGameThreadFinished(app);
-		EngineAppWaitForRenderer(app);
+		pthread_barrier_wait(&app->gameThreadFinished);
+		pthread_barrier_wait(&app->renderThreadFinished);
+		
+		uint64_t end = EngineGetTicks();
+		printf("delta : %llfs\n", ((float)end / 1000.f) - ((float)start / 1000.f));
 	}
+
+	EngineTextureDestroy(texture);
+	pthread_exit(NULL);
 }
 
 void EngineApplicationRun(EngineApplication* app){
 	assert(app != NULL && "cannot run a NULL application");
-	pthread_create(&app->gameThread, NULL, (void*)&EngineApplicationGameThread, app);
+	if (pthread_create(&app->gameThread, NULL, (void*)&EngineApplicationGameThread, app) != 0){
+		perror("Failed to create agame thread");
+	}
 
 	while (app->running){
-		EngineAppGameThreadBegin(app);
-		
-		
 		EngineRendererDraw(app->renderer);
-		EngineAppWaitForGame(app);
+		pthread_barrier_wait(&app->gameThreadFinished);
 		
 		EngineRendererSwap(app->renderer);
 		EngineWindowUpdate(app->window);
@@ -137,7 +96,7 @@ void EngineApplicationRun(EngineApplication* app){
 		EngineRendererClear(app->renderer);
 
 		EngineSleep(16);
-		EngineAppRenderThreadFinished(app);
+		pthread_barrier_wait(&app->renderThreadFinished);
 	}
 
 	pthread_join(app->gameThread, NULL);

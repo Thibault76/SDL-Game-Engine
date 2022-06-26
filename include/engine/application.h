@@ -14,12 +14,8 @@ typedef struct{
 
 	// multithreading
 	pthread_t gameThread;
-	volatile Bool gameThreadFinished;
-	volatile Bool renderThreadFinished;
-	pthread_mutex_t gameThreadLock;
-	pthread_mutex_t renderThreadLock;
-	pthread_cond_t gameThreadCond;
-	pthread_cond_t renderThreadCond;
+	pthread_barrier_t gameThreadFinished;
+	pthread_barrier_t renderThreadFinished;
 
 } EngineApplication;
 

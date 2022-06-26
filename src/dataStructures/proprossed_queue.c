@@ -1,4 +1,4 @@
-#include "engine/dataStructure/preprossed_queue.h"
+#include "engine/dataStructure/proprossed_queue.h"
 
 /*--------------------------------------------*/
 
@@ -129,7 +129,7 @@ void EngineQueuePreproPrintAllElementsInt(QueuePreproStruct *q){
 
     QueueElement *e = q->first;
     for(int i = 0; i < q->nbElement; i++){
-        printf("[%d], ", (int)e->value);
+        printf("[%d], ", *(int*)e->value);
         e = e->next;
     }
 
@@ -147,7 +147,7 @@ printf("\n------------------------------\n");
 
     QueueElement *e = q->first;
     for(int i = 0; i < q->nbUsedElement; i++){
-        printf("[%d], ", (int)e->value);
+        printf("[%d], ", *(int*)e->value);
         e = e->next;
     }
 

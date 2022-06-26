@@ -37,7 +37,8 @@ EngineRenderer* EngineRendererCreate(EngineWindow* window, uint32_t renderComman
 				element = element->next;
 			}
 		}
-		renderer->buffers[queue] = EngineFloatDynamicArrayCreate(renderCommandCount * 3);
+		renderer->buffers[queue] = EngineFloatDynamicArrayCreate(renderCommandCount);
+		renderer->textureBuffers[queue] = EngineDynamicArrayCreate(renderCommandCount);
 	}
 	renderer->currentQueue = 0;
 	renderer->batchRenderQueue = EngineCircularQueueCreate(renderCommandCount, 10);
@@ -71,24 +72,13 @@ void EngineRendererDestroy(EngineRenderer* renderer){
 	for (uint8_t queue=0; queue<2; queue++){
 		EngineRendererDestroyQueue(renderer->renderQueues[queue]);
 		EngineFloatDynamicArrayDestroy(renderer->buffers[queue]);
+		EngineDynamicArrayDestroy(renderer->textureBuffers[queue]);
 	}
 
 	EngineCircularQueueDestroy(renderer->batchRenderQueue);
 	SDL_DestroyRenderer(renderer->nativeRunderer);
 	free(renderer);
 	renderer = NULL;
-}
-
-uint16_t EngineRenderergetRenderTypeSize(EngineRenderCommandType type){
-	switch (type){
-		case ENGINE_RENDER_COMMAND_CLEAR: return 0;
-		case ENGINE_RENDER_COMMAND_DRAW_LINES: return sizeof(float)*4;
-		case ENGINE_RENDER_COMMAND_DRAW_POINTS: return sizeof(float)*2;
-		case ENGINE_RENDER_COMMAND_DRAW_RECTS: return sizeof(float)*4;
-		case ENGINE_RENDER_COMMAND_SET_DRAW_COLOR: return sizeof(float)*4;
-	}
-	assert(false && "invalid engine render command type");
-	return 0;
 }
 
 void EngineRendererClear(EngineRenderer* renderer){
@@ -161,6 +151,72 @@ void EngineRendererDrawFilledRect(EngineRenderer* renderer, float x, float y, fl
 	EngineFloatDynamicArrayInsert(buffer, height);
 }
 
+void EngineRendererDrawSubTexture(EngineRenderer* renderer, float x, float y, float width, float height, EngineSubTexture* texture){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_SUBTEXTURE;
+	command->data = EngineFloatDynamicArrayInsert(buffer, EngineDynamicArrayGetSize((EngineRendererGetCurrentTextureBuffer(renderer))));
+	EngineDynamicArrayInsert(EngineRendererGetCurrentTextureBuffer(renderer), texture->texture);
+	EngineFloatDynamicArrayInsert(buffer, x);
+	EngineFloatDynamicArrayInsert(buffer, y);
+	EngineFloatDynamicArrayInsert(buffer, width);
+	EngineFloatDynamicArrayInsert(buffer, height);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->x);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->y);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->w);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->h);
+}
+
+void EngineRendererDrawRotatedSubTexture(EngineRenderer* renderer, float x, float y, float width, float height, float angle, float rotationX, float rotationY,  EngineSubTexture* texture){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_ROTATED_SUBTEXTURE;
+	command->data = EngineFloatDynamicArrayInsert(buffer, EngineDynamicArrayGetSize((EngineRendererGetCurrentTextureBuffer(renderer))));
+	EngineDynamicArrayInsert(EngineRendererGetCurrentTextureBuffer(renderer), texture->texture);
+	EngineFloatDynamicArrayInsert(buffer, x);
+	EngineFloatDynamicArrayInsert(buffer, y);
+	EngineFloatDynamicArrayInsert(buffer, width);
+	EngineFloatDynamicArrayInsert(buffer, height);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->x);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->y);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->w);
+	EngineFloatDynamicArrayInsert(buffer, (float)texture->h);
+	EngineFloatDynamicArrayInsert(buffer, angle);
+	EngineFloatDynamicArrayInsert(buffer, rotationX);
+	EngineFloatDynamicArrayInsert(buffer, rotationY);
+}
+
+void EngineRendererDrawTexture(EngineRenderer* renderer, float x, float y, float width, float height, EngineTexture* texture){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_TEXTURE;
+	command->data = EngineFloatDynamicArrayInsert(buffer, EngineDynamicArrayGetSize((EngineRendererGetCurrentTextureBuffer(renderer))));
+	EngineDynamicArrayInsert(EngineRendererGetCurrentTextureBuffer(renderer), texture->texture);
+	EngineFloatDynamicArrayInsert(buffer, x);
+	EngineFloatDynamicArrayInsert(buffer, y);
+	EngineFloatDynamicArrayInsert(buffer, width);
+	EngineFloatDynamicArrayInsert(buffer, height);
+}
+
+void EngineRendererDrawRotatedTexture(EngineRenderer* renderer, float x, float y, float width, float height, float angle, float rotationX, float rotationY, EngineTexture* texture){
+	assert(renderer != NULL && "cannot draw on a NULL renderer");
+	EngineRenderCommand* command = EngineRendererPushCommand(EngineRendererGetCurrentQueue(renderer));
+	EngineFloatDynamicArray* buffer = EngineRendererGetCurrentBuffer(renderer);
+	command->type = ENGINE_RENDER_COMMAND_DRAW_ROTATED_TEXTURE;
+	command->data = EngineFloatDynamicArrayInsert(buffer, EngineDynamicArrayGetSize((EngineRendererGetCurrentTextureBuffer(renderer))));
+	EngineDynamicArrayInsert(EngineRendererGetCurrentTextureBuffer(renderer), texture->texture);
+	EngineFloatDynamicArrayInsert(buffer, x);
+	EngineFloatDynamicArrayInsert(buffer, y);
+	EngineFloatDynamicArrayInsert(buffer, width);
+	EngineFloatDynamicArrayInsert(buffer, height);
+	EngineFloatDynamicArrayInsert(buffer, angle);
+	EngineFloatDynamicArrayInsert(buffer, rotationX);
+	EngineFloatDynamicArrayInsert(buffer, rotationY);
+}
+
 EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer* renderer){
 	assert(renderer != NULL && "cannot get the current queue of a NULL renderer");
 	return renderer->renderQueues[renderer->currentQueue];
@@ -171,11 +227,17 @@ EngineFloatDynamicArray* EngineRendererGetCurrentBuffer(EngineRenderer* renderer
 	return renderer->buffers[renderer->currentQueue];
 }
 
+EngineDynamicArray* EngineRendererGetCurrentTextureBuffer(EngineRenderer* renderer){
+	assert(renderer != NULL && "cannot get the current buffer of a NULL renderer");	
+	return renderer->textureBuffers[renderer->currentQueue];
+}
+
 void EngineRendererSwap(EngineRenderer* renderer){
 	assert(renderer != NULL && "cannot swap a NULL renderer");
 	renderer->currentQueue = (renderer->currentQueue+1) % 2;
 
 	EngineFloatDynamicArrayClear(EngineRendererGetCurrentBuffer(renderer));
+	EngineDynamicArrayClear(EngineRendererGetCurrentTextureBuffer(renderer));
 	EngineCircularQueueClear(EngineRendererGetCurrentQueue(renderer));
 	EngineCircularQueueClear(renderer->batchRenderQueue);
 }
@@ -236,6 +298,93 @@ void EngineRenderSetDrawColor(EngineRenderer* renderer, EngineRenderCommand* com
 	SDL_SetRenderDrawColor(renderer->nativeRunderer, r, g, b, a);
 }
 
+void EngineRenderDrawSubTexture(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
+	float *data = command->data;
+
+	void* texture = EngineRendererGetCurrentTextureBuffer(renderer)->content[(int)data[0]];
+
+	SDL_FRect dstRect;
+	dstRect.x = data[1];
+	dstRect.y = data[2];
+	dstRect.w = data[3];
+	dstRect.h = data[4];
+
+	SDL_Rect srcRect;
+	srcRect.x = data[5];
+	srcRect.y = data[6];
+	srcRect.w = data[7];
+	srcRect.h = data[8];
+
+	SDL_RenderCopyF((SDL_Renderer*)renderer->nativeRunderer, (SDL_Texture*)texture, &srcRect, &dstRect);
+}
+
+void EngineRenderDrawTexture(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
+	float *data = command->data;
+	
+	void* texture = EngineRendererGetCurrentTextureBuffer(renderer)->content[(int)data[0]];
+
+	SDL_FRect dstRect;
+	dstRect.x = data[1];
+	dstRect.y = data[2];
+	dstRect.w = data[3];
+	dstRect.h = data[4];
+
+	SDL_RenderCopyF((SDL_Renderer*)renderer->nativeRunderer, (SDL_Texture*)texture, NULL, &dstRect);
+}
+
+void EngineRenderDrawRotatedSubTexture(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
+	float *data = command->data;
+	
+	void* texture = EngineRendererGetCurrentTextureBuffer(renderer)->content[(int)data[0]];
+
+	
+	SDL_FRect dstRect;
+	dstRect.x = data[1];
+	dstRect.y = data[2];
+	dstRect.w = data[3];
+	dstRect.h = data[4];
+
+	SDL_Rect srcRect;
+	srcRect.x = data[5];
+	srcRect.y = data[6];
+	srcRect.w = data[7];
+	srcRect.h = data[8];
+
+	float angle = data[9];
+	SDL_FPoint center;
+	center.x = data[10];
+	center.y = data[11];
+
+	SDL_RenderCopyExF((SDL_Renderer*)renderer->nativeRunderer, (SDL_Texture*)texture, &srcRect, &dstRect, angle, &center, SDL_FLIP_NONE);
+}
+
+void EngineRenderDrawRotatedTexture(EngineRenderer* renderer, EngineRenderCommand* command){
+	assert(renderer != NULL && "cannot draw from a NULL renderer");
+	assert(command != NULL && "cannot draw a line from a NULL render command");
+	float *data = command->data;
+
+	SDL_FRect dstRect;
+	dstRect.x = data[1];
+	dstRect.y = data[2];
+	dstRect.w = data[3];
+	dstRect.h = data[4];
+	
+	float angle = data[5];
+	SDL_FPoint center;
+	center.x = data[6];
+	center.y = data[7];
+
+	void* texture = EngineRendererGetCurrentTextureBuffer(renderer)->content[(int)data[0]];
+
+	SDL_RenderCopyExF((SDL_Renderer*)renderer->nativeRunderer, texture, NULL, &dstRect, angle, &center, SDL_FLIP_NONE);
+}
+
 void EngineRenderBatchDrawCalls(EngineRenderer* renderer, EngineCircularQueue* queue){
 	assert(queue != NULL && "invalid queue");
 	EngineRenderCommand *batchCommand = NULL;
@@ -279,6 +428,10 @@ void EngineRendererDraw(EngineRenderer* renderer){
 			case ENGINE_RENDER_COMMAND_CLEAR: EngineRenderClear(renderer, data); break;
 			case ENGINE_RENDER_COMMAND_DRAW_FILLED_RECTS: EngineRenderFilledRects(renderer, data); break;
 			case ENGINE_RENDER_COMMAND_SET_DRAW_COLOR: EngineRenderSetDrawColor(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_SUBTEXTURE: EngineRenderDrawSubTexture(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_ROTATED_SUBTEXTURE: EngineRenderDrawRotatedSubTexture(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_TEXTURE: EngineRenderDrawTexture(renderer, data); break;
+			case ENGINE_RENDER_COMMAND_DRAW_ROTATED_TEXTURE: EngineRenderDrawRotatedTexture(renderer, data); break;
 		}
 	}
 

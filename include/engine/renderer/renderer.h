@@ -4,6 +4,9 @@
 #include "../window.h"
 #include "../dataStructure/circularQueue.h"
 #include "../dataStructure/floatDynamicArray.h"
+#include "../dataStructure/dynamicArray.h"
+#include "subTexture.h"
+#include "texture.h"
 #include "renderCommand.h"
 
 typedef struct{
@@ -11,6 +14,7 @@ typedef struct{
 	uint8_t currentQueue;
 
 	EngineFloatDynamicArray* buffers[2];
+	EngineDynamicArray* textureBuffers[2];
 	EngineCircularQueue* batchRenderQueue;
 
 	void* nativeRunderer;
@@ -101,6 +105,60 @@ void EngineRendererDrawRect(EngineRenderer* renderer, float x, float y, float wi
 void EngineRendererDrawFilledRect(EngineRenderer* renderer, float x, float y, float width, float height);
 
 /**
+ * @brief draw a sub texture onto the renderer
+ * 
+ * @param renderer the renderer to draw on
+ * @param x the x axis of the top left corner of the texture
+ * @param y the y axis of the top left corner of the texture
+ * @param width the width in pixels of the texture
+ * @param height the height in pixexls of the texture
+ * @param texture the texture to draw
+ */
+void EngineRendererDrawSubTexture(EngineRenderer* renderer, float x, float y, float width, float height, EngineSubTexture* texture);
+
+/**
+ * @brief draw a sub texture onto the renderer
+ * 
+ * @param renderer the renderer to draw on
+ * @param x the x axis of the top left corner of the texture
+ * @param y the y axis of the top left corner of the texture
+ * @param width the width in pixels of the texture
+ * @param height the height in pixexls of the texture
+ * @param angle the angle of rotation in degrees
+ * @param rotationX the x axis of the rotation center
+ * @param rotationY the y axis of the rotation center
+ * @param texture the texture to draw
+ */
+void EngineRendererDrawRotatedSubTexture(EngineRenderer* renderer, float x, float y, float width, float height, float angle, float rotationX, float rotationY,  EngineSubTexture* texture);
+
+/**
+ * @brief draw a sub texture onto the renderer
+ * 
+ * @param renderer the renderer to draw on
+ * @param x the x axis of the top left corner of the texture
+ * @param y the y axis of the top left corner of the texture
+ * @param width the width in pixels of the texture
+ * @param height the height in pixexls of the texture
+ * @param texture the texture to draw
+ */
+void EngineRendererDrawTexture(EngineRenderer* renderer, float x, float y, float width, float height, EngineTexture* texture);
+
+/**
+ * @brief draw a sub texture onto the renderer
+ * 
+ * @param renderer the renderer to draw on
+ * @param x the x axis of the top left corner of the texture
+ * @param y the y axis of the top left corner of the texture
+ * @param width the width in pixels of the texture
+ * @param height the height in pixexls of the texture
+ * @param angle the angle of rotation in degrees
+ * @param rotationX the x axis of the rotation center
+ * @param rotationY the y axis of the rotation center
+ * @param texture the texture to draw
+ */
+void EngineRendererDrawRotatedTexture(EngineRenderer* renderer, float x, float y, float width, float height, float angle, float rotationX, float rotationY, EngineTexture* texture);
+
+/**
  * @brief get the current queue of the renderer
  * @param renderer 
  * @return EngineCircularQueue* 
@@ -113,6 +171,13 @@ EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer* renderer);
  * @return EngineFloatDynamicArray* 
  */
 EngineFloatDynamicArray* EngineRendererGetCurrentBuffer(EngineRenderer* renderer);
+
+/**
+ * @brief get the current texture buffer of the renderer
+ * @param renderer 
+ * @return EngineDynamicArray* 
+ */
+EngineDynamicArray* EngineRendererGetCurrentTextureBuffer(EngineRenderer* renderer);
 
 /**
  * @brief swap the renderer queue and data buffer
