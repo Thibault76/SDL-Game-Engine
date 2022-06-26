@@ -6,6 +6,7 @@
 int main(int argv, char **args){
 	/*
 	EngineApplication *app = EngineApplicationCreate();
+
 	EngineApplicationRun(app);
 	EngineApplicationDestroy(app); */
 

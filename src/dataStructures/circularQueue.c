@@ -35,6 +35,7 @@ void EngineCircularQueueAllocElement(EngineCircularQueue *q){
 		exit(EXIT_FAILURE);
 
 	e->value = NULL;
+	e->next = NULL;
 
 	// we don't use EngineCircularQueueIsEmpty because we check the real count of elements, not the used ones
 	if(q->nbElement == 0){
