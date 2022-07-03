@@ -5,6 +5,7 @@
 typedef struct{
 	uint32_t size;
 	uint32_t used;
+	uint32_t step;
 	float* content;
 } EngineFloatDynamicArray;
 

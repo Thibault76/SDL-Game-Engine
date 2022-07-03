@@ -9,6 +9,7 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayCreate(uint32_t size){
 	MALLOC_CHECK(arr->content);
 	arr->used = 0;
 	arr->size = size;
+	arr->step = 150;
 	return arr;
 }
 
@@ -25,8 +26,9 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray 
 
 void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
 	assert(arr != NULL && "cannot insert data in a NULL dynamic array");
-	if (arr->used+1 == arr->size){
-		arr->size *= 2;
+	if (arr->used+1 >= arr->size){
+		arr->size += arr->step;
+		printf("arr : %d\n", arr);
 		arr->content = realloc(arr->content, arr->size * sizeof(float));
 		MALLOC_CHECK(arr->content);
 	}

@@ -18,7 +18,7 @@ typedef enum{
 } EngineRenderCommandType;
 
 typedef struct{
-	void *data;
+	uint32_t dataIndex;
 	EngineRenderCommandType type;
 	uint16_t count;
 } EngineRenderCommand;
