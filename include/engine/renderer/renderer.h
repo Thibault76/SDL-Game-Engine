@@ -10,12 +10,22 @@
 #include "renderCommand.h"
 
 typedef struct{
-	EngineCircularQueue* renderQueues[2]; // a queue of render commands
+	EngineRenderCommand* renderQueues[2]; // an array of render commands
+	uint32_t commandCounts[2];
+	uint32_t allocatedCommandCount[2];
 	uint8_t currentQueue;
 
-	EngineFloatDynamicArray* buffers[2];
-	EngineDynamicArray* textureBuffers[2];
-	EngineCircularQueue* batchRenderQueue;
+	float* buffers[2];
+	uint32_t buffersSize[2];
+	uint32_t buffersAllocatedSize[2];
+
+	void** textureBuffers[2];
+	uint32_t textureBuffersSize[2];
+	uint32_t textureBuffersAllocatedSize[2];
+
+	EngineRenderCommand** batchRenderQueue;
+	uint32_t batchRenderQueueCommandCount;
+	uint32_t batchRenderQueueAllocatedCommmandCount;
 
 	void* nativeRunderer;
 	EngineWindow* window;
@@ -163,21 +173,14 @@ void EngineRendererDrawRotatedTexture(EngineRenderer* renderer, float x, float y
  * @param renderer 
  * @return EngineCircularQueue* 
  */
-EngineCircularQueue* EngineRendererGetCurrentQueue(EngineRenderer* renderer);
-
-/**
- * @brief get the current data buffer of the renderer
- * @param renderer 
- * @return EngineFloatDynamicArray* 
- */
-EngineFloatDynamicArray* EngineRendererGetCurrentBuffer(EngineRenderer* renderer);
+EngineRenderCommand* EngineRendererGetCurrentQueue(EngineRenderer* renderer);
 
 /**
  * @brief get the current texture buffer of the renderer
  * @param renderer 
- * @return EngineDynamicArray* 
+ * @return void** 
  */
-EngineDynamicArray* EngineRendererGetCurrentTextureBuffer(EngineRenderer* renderer);
+void** EngineRendererGetCurrentTextureBuffer(EngineRenderer* renderer);
 
 /**
  * @brief swap the renderer queue and data buffer

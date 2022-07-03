@@ -60,19 +60,20 @@ void* EngineApplicationGameThread(void* appPtr){
 
 	EngineTexture* texture = EngineTextureCreateFromPath(app->renderer, "gradient.bmp");
 
+	int j=500;
 	while (app->running){
 		uint64_t start = EngineGetTicks();
 
 		EngineRendererSetDrawColor(app->renderer, 255, 255, 255, 255);
-		for (int i=0; i<1000; i++){
-			EngineRendererDrawLine(app->renderer, rand() % 1080, rand() % 720, rand() % 1080, rand() % 720);
+		for (int i=0; i<j; i++){
+			EngineRendererDrawPoint(app->renderer, rand() % 1080, rand() % 720);
 		}
 
 		pthread_barrier_wait(&app->gameThreadFinished);
 		pthread_barrier_wait(&app->renderThreadFinished);
 		
 		uint64_t end = EngineGetTicks();
-		printf("delta : %llfs\n", ((float)end / 1000.f) - ((float)start / 1000.f));
+		printf("delta : %llfs || j : %d\n", ((float)end / 1000.f) - ((float)start / 1000.f), j);
 	}
 
 	EngineTextureDestroy(texture);

@@ -3,7 +3,7 @@
 #include "../core.h"
 #include "texture.h"
 
-typedef struct{
+typedef struct EngineSubTexture{
 	EngineTexture* texture;
 	uint32_t x, y;
 	uint32_t w, h;
