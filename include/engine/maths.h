@@ -8,6 +8,7 @@ typedef struct Vector{
 } Vector;
 
 typedef Vector Point;
+typedef Vector Dimensions;
 
 Vector *EngineMathsNewVector(int num, ...);
 

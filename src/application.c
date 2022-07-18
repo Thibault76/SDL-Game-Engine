@@ -60,8 +60,9 @@ void* EngineApplicationGameThread(void* appPtr){
 
 	EngineTexture* texture = EngineTextureCreateFromPath(app->renderer, "gradient.bmp");
 
-	int j=500;
+	int j=100;
 	while (app->running){
+		j += 10;
 		uint64_t start = EngineGetTicks();
 
 		EngineRendererSetDrawColor(app->renderer, 255, 255, 255, 255);

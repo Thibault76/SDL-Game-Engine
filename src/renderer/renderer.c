@@ -11,7 +11,7 @@ EngineRenderCommand* EngineRendererPushCommand(EngineRenderer *renderer){
 		const int step = 150;
 
 		renderer->allocatedCommandCount[renderer->currentQueue] += step;
-		queue = realloc(queue, sizeof(EngineRenderCommand) * renderer->allocatedCommandCount[renderer->currentQueue]);
+		queue = (EngineRenderCommand*) realloc(queue, sizeof(EngineRenderCommand) * renderer->allocatedCommandCount[renderer->currentQueue]);
 		MALLOC_CHECK(queue);
 
 		for (int i=renderer->commandCounts[renderer->currentQueue]; i<renderer->allocatedCommandCount[renderer->currentQueue]; i++){
@@ -35,7 +35,7 @@ uint32_t EngineRendererBufferInsert(EngineRenderer *renderer, float data){
 	
 	if (renderer->buffersSize[renderer->currentQueue]+1 >= renderer->buffersAllocatedSize[renderer->currentQueue]){
 		renderer->buffersAllocatedSize[renderer->currentQueue] += 150;
-		renderer->buffers[renderer->currentQueue] = realloc(renderer->buffers[renderer->currentQueue], sizeof(float) * renderer->buffersAllocatedSize[renderer->currentQueue]);
+		renderer->buffers[renderer->currentQueue] = (float*) realloc(renderer->buffers[renderer->currentQueue], sizeof(float) * renderer->buffersAllocatedSize[renderer->currentQueue]);
 		MALLOC_CHECK(renderer->buffers[renderer->currentQueue]);
 	}
 

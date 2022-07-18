@@ -9,7 +9,7 @@
 #include "texture.h"
 #include "renderCommand.h"
 
-typedef struct{
+typedef struct EngineRenderer{
 	EngineRenderCommand* renderQueues[2]; // an array of render commands
 	uint32_t commandCounts[2];
 	uint32_t allocatedCommandCount[2];
