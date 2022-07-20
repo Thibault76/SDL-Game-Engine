@@ -1,7 +1,7 @@
 #pragma once
 #include "queue.h"
 
-#define EngineQueuePreproPushElement(q, x) _intern_EngineQueuePreproPushElement(q, (void*)x)
+#define CeosQueuePreproPushElement(q, x) _intern_CeosQueuePreproPushElement(q, (void*)x)
 
 /**
  * @brief preprossed queue structure
@@ -23,7 +23,7 @@ typedef struct QueuePreproStruct{
  * @param step Number of elements added when there is excess
  * @return QueuePreproStruct* preprossed structural queue
  */
-QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step);
+QueuePreproStruct *CeosQueuePreproNew(int initNbE, int step);
 
 /**
  * @brief Add an element empty to queue
@@ -31,7 +31,7 @@ QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step);
  * @param q Preprossed structural queue
  * @return QueueElement* 
  */
-void EnginequeuePreproAddElement(QueuePreproStruct *q);
+void CeosqueuePreproAddElement(QueuePreproStruct *q);
 
 /**
  * @brief Return 1 if the preprossed queue is empty else return 0
@@ -39,21 +39,21 @@ void EnginequeuePreproAddElement(QueuePreproStruct *q);
  * @param q Preprossed structural queue
  * @return Bool 
  */
-Bool EngineQueuePreproIsEmpty(QueuePreproStruct *q);
+Bool CeosQueuePreproIsEmpty(QueuePreproStruct *q);
 
 /**
  * @brief Add step number elements to queue
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproAddStepElement(QueuePreproStruct *q);
+void CeosQueuePreproAddStepElement(QueuePreproStruct *q);
 
 /**
  * @brief Delete definitively the first queue element
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproPopDefElement(QueuePreproStruct *q);
+void CeosQueuePreproPopDefElement(QueuePreproStruct *q);
 
 /**
  * @brief Delete all queue
@@ -61,14 +61,14 @@ void EngineQueuePreproPopDefElement(QueuePreproStruct *q);
  * @param q Preprossed structural queue
  * @return QueuePreproStruct* return NULL pointer
  */
-QueuePreproStruct *EngineQueuePreproClearAll(QueuePreproStruct *q);
+QueuePreproStruct *CeosQueuePreproClearAll(QueuePreproStruct *q);
 
 /**
  * @brief Delete the first queue element
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproPopElement(QueuePreproStruct *q);
+void CeosQueuePreproPopElement(QueuePreproStruct *q);
 
 /**
  * @brief Add use element to preprossed queue
@@ -76,18 +76,18 @@ void EngineQueuePreproPopElement(QueuePreproStruct *q);
  * @param q Preprossed structural queue
  * @param x Value saved in element of queue
  */
-void _intern_EngineQueuePreproPushElement(QueuePreproStruct *q, void *x);
+void _intern_CeosQueuePreproPushElement(QueuePreproStruct *q, void *x);
 
 /**
  * @brief Print all elements in preprossed queue like int
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproPrintAllElementsInt(QueuePreproStruct *q);
+void CeosQueuePreproPrintAllElementsInt(QueuePreproStruct *q);
 
 /**
  * @brief Print only use elements in preprossed queue like int
  * 
  * @param q Preprossed structural queue
  */
-void EngineQueuePreproPrintUsedElementsInt(QueuePreproStruct *q);
+void CeosQueuePreproPrintUsedElementsInt(QueuePreproStruct *q);

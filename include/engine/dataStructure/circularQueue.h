@@ -6,29 +6,29 @@
  * @brief preprossed queue structure
  * 
  */
-typedef struct EngineCircularQueue{
+typedef struct CeosCircularQueue{
 	QueueElement* first;
 	QueueElement* last; // the last element of the 'fake' queue
 	QueueElement* end; // the true last element of the queue
 	uint32_t nbElement;
 	uint32_t nbUseElement;
 	uint32_t step;
-} EngineCircularQueue;
+} CeosCircularQueue;
 
 /**
  * @brief Create a new preprocessed queue
  * @param initNbE Initial number elements
  * @param step Number of elements added when there is excess
- * @return EngineCircularQueue* preprossed structural queue
+ * @return CeosCircularQueue* preprossed structural queue
  */
-EngineCircularQueue *EngineCircularQueueCreate(int initNbE, int step);
+CeosCircularQueue *CeosCircularQueueCreate(int initNbE, int step);
 
 /**
  * @brief allocate an empty element and push it at the end of the queue
  * @param q Preprossed structural queue
  * @return QueueElement* 
  */
-void EngineCircularQueueAllocElement(EngineCircularQueue* q);
+void CeosCircularQueueAllocElement(CeosCircularQueue* q);
 
 
 /**
@@ -36,7 +36,7 @@ void EngineCircularQueueAllocElement(EngineCircularQueue* q);
  * @param q Preprossed structural queue
  * @return QueueElement* 
  */
-void EngineCircularQueueFreeElement(EngineCircularQueue* q);
+void CeosCircularQueueFreeElement(CeosCircularQueue* q);
 
 /**
  * @brief Return 1 if the preprossed queue is empty else return 0
@@ -44,20 +44,20 @@ void EngineCircularQueueFreeElement(EngineCircularQueue* q);
  * @param q Preprossed structural queue
  * @return Bool 
  */
-Bool EngineCircularQueueIsEmpty(EngineCircularQueue* q);
+Bool CeosCircularQueueIsEmpty(CeosCircularQueue* q);
 
 /**
  * @brief push the given element at the end of the queue
  * @param q Preprossed structural queue
  * @param value the value to store /!\ it will store the pointer and not a copy ! the user is responsable of memory leaks /!\
  */
-void EngineCircularQueuePush(EngineCircularQueue* q, void* value);
+void CeosCircularQueuePush(CeosCircularQueue* q, void* value);
 
 /**
  * @brief push the given element at the end of the queue
  * @param q Preprossed structural queue
  */
-void** EngineCircularQueuePushNULL(EngineCircularQueue* q);
+void** CeosCircularQueuePushNULL(CeosCircularQueue* q);
 
 /**
  * @brief Delete the first queue element
@@ -65,32 +65,32 @@ void** EngineCircularQueuePushNULL(EngineCircularQueue* q);
  * @param q Preprossed structural queue
  * @return void* the value of the last first element
  */
-void* EngineCircularQueuePop(EngineCircularQueue* q);
+void* CeosCircularQueuePop(CeosCircularQueue* q);
 
 /**
  * @brief Delete all queue
  * 
  * @param q Preprossed structural queue
- * @return EngineCircularQueue* return NULL pointer
+ * @return CeosCircularQueue* return NULL pointer
  */
-EngineCircularQueue *EngineCircularQueueDestroy(EngineCircularQueue* q);
+CeosCircularQueue *CeosCircularQueueDestroy(CeosCircularQueue* q);
 
 /**
  * @brief get the first element of the list
  * @param q 
  * @return QueueElement* 
  */
-QueueElement* EngineCircularQueueGetBegin(EngineCircularQueue* q);
+QueueElement* CeosCircularQueueGetBegin(CeosCircularQueue* q);
 
 /**
  * @brief get the last element of the list /!\ not a valid output /!\
  * @param q
  * @return QueueElement* 
  */
-QueueElement* EngineCircularQueueGetEnd(EngineCircularQueue* q);
+QueueElement* CeosCircularQueueGetEnd(CeosCircularQueue* q);
 
 /**
  * @brief clear the the count of element in the queue
  * 
  */
-void EngineCircularQueueClear(EngineCircularQueue* q);
+void CeosCircularQueueClear(CeosCircularQueue* q);

@@ -1,7 +1,7 @@
 #pragma once
 #include "../core.h"
 
-#define EngineQueuePush(q, x) _intern_EngineQueuePush(q, (void*)x);
+#define CeosQueuePush(q, x) _intern_CeosQueuePush(q, (void*)x);
 
 /**
  * @brief element of a queue
@@ -28,7 +28,7 @@ typedef struct QueueStruct{
  * @param queue queue
  * @return Bool 
  */
-Bool EngineQueueIsEmpty(QueueStruct *queue);
+Bool CeosQueueIsEmpty(QueueStruct *queue);
 
 /**
  * @brief returns the length queue's
@@ -36,7 +36,7 @@ Bool EngineQueueIsEmpty(QueueStruct *queue);
  * @param queue queue
  * @return length
  */
-int EngineQueueLength(QueueStruct *queue);
+int CeosQueueLength(QueueStruct *queue);
 
 /**
  * @brief returns the first element of the queue
@@ -44,7 +44,7 @@ int EngineQueueLength(QueueStruct *queue);
  * @param queue queue
  * @return first element
  */
-void* EngineQueueFirst(QueueStruct *queue);
+void* CeosQueueFirst(QueueStruct *queue);
 
 /**
  * @brief returns the last element of the queue
@@ -52,7 +52,7 @@ void* EngineQueueFirst(QueueStruct *queue);
  * @param queue queue
  * @return last element
  */
-void* EngineQueueLast(QueueStruct *queue);
+void* CeosQueueLast(QueueStruct *queue);
 
 /**
  * @brief Add element to queue
@@ -60,28 +60,28 @@ void* EngineQueueLast(QueueStruct *queue);
  * @param queue queue
  * @param x element
  */
-void _intern_EngineQueuePush(QueueStruct *queue, void* x);
+void _intern_CeosQueuePush(QueueStruct *queue, void* x);
 
 /**
  * @brief Delete the first element of the queue
  * 
  * @param queue queue
  */
-void EngineQueuePop(QueueStruct *queue);
+void CeosQueuePop(QueueStruct *queue);
 
 /**
  * @brief Delete all the queue
  * 
  * @param queue queue
  */
-void EngineQueueClear(QueueStruct *queue);
+void CeosQueueClear(QueueStruct *queue);
 
 /**
  * @brief Create an empty queue
  * 
  * @return empty queue
  */
-QueueStruct *EngineQueueNew(void);
+QueueStruct *CeosQueueNew(void);
 
 /**
  * @brief invert two queues
@@ -89,4 +89,4 @@ QueueStruct *EngineQueueNew(void);
  * @param a first queue
  * @param b second queue
  */
-void EngineQueueSwitch(QueueStruct *a, QueueStruct *b);
+void CeosQueueSwitch(QueueStruct *a, QueueStruct *b);

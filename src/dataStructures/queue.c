@@ -5,7 +5,7 @@
 
 /*--------------------------------------------*/
 
-Bool EngineQueueIsEmpty(QueueStruct *queue){
+Bool CeosQueueIsEmpty(QueueStruct *queue){
     if(queue->first == NULL && queue->last == NULL)
         return true;
 
@@ -14,7 +14,7 @@ Bool EngineQueueIsEmpty(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-QueueStruct *EngineQueueNew(void){
+QueueStruct *CeosQueueNew(void){
     QueueStruct *q = malloc(sizeof(QueueStruct));
     MALLOC_CHECK(q);
 
@@ -27,14 +27,14 @@ QueueStruct *EngineQueueNew(void){
 
 /*--------------------------------------------*/
 
-int EngineQueueLength(QueueStruct *queue){
+int CeosQueueLength(QueueStruct *queue){
     return queue->nbElement;
 }
 
 /*--------------------------------------------*/
 
-void* EngineQueueFirst(QueueStruct *queue){
-    if(EngineQueueIsEmpty(queue))
+void* CeosQueueFirst(QueueStruct *queue){
+    if(CeosQueueIsEmpty(queue))
         return NULL;
     
     return queue->first->value;
@@ -42,8 +42,8 @@ void* EngineQueueFirst(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void* EngineQueueLast(QueueStruct *queue){
-    if(EngineQueueIsEmpty(queue))
+void* CeosQueueLast(QueueStruct *queue){
+    if(CeosQueueIsEmpty(queue))
         return NULL;
     
     return queue->last->value;
@@ -51,7 +51,7 @@ void* EngineQueueLast(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void _intern_EngineQueuePush(QueueStruct *queue, void* x){
+void _intern_CeosQueuePush(QueueStruct *queue, void* x){
     QueueElement *element;
 
     element = malloc(sizeof(*element));
@@ -60,7 +60,7 @@ void _intern_EngineQueuePush(QueueStruct *queue, void* x){
     element->value = x;
     element->next = NULL;
 
-    if(EngineQueueIsEmpty(queue)){
+    if(CeosQueueIsEmpty(queue)){
         queue->first = element;
         queue->last = element;
     } else {
@@ -73,8 +73,8 @@ void _intern_EngineQueuePush(QueueStruct *queue, void* x){
 
 /*--------------------------------------------*/
 
-void EngineQueuePop(QueueStruct *queue){
-    if(EngineQueueIsEmpty(queue)){
+void CeosQueuePop(QueueStruct *queue){
+    if(CeosQueueIsEmpty(queue)){
         return;
     }
 
@@ -93,21 +93,21 @@ void EngineQueuePop(QueueStruct *queue){
 
 /*--------------------------------------------*/
 
-void EngineQueueClear(QueueStruct *queue){
-    if(EngineQueueIsEmpty(queue)){
+void CeosQueueClear(QueueStruct *queue){
+    if(CeosQueueIsEmpty(queue)){
         free(queue);
         return;
     }
 
-    while(!EngineQueueIsEmpty(queue))
-        EngineQueuePop(queue);
+    while(!CeosQueueIsEmpty(queue))
+        CeosQueuePop(queue);
     
     free(queue);
 }
 
 /*--------------------------------------------*/
 
-void EngineQueueSwitch(QueueStruct *a, QueueStruct *b){
+void CeosQueueSwitch(QueueStruct *a, QueueStruct *b){
     QueueStruct *c = a;
     a = b;
     b = c;

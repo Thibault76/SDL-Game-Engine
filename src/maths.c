@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "engine/core.h"
 
-Vector *EngineMathsNewVector(int num, ...){
+Vector *CeosMathsNewVector(int num, ...){
     va_list valist;
     va_list copy;
     va_start(valist, num);
@@ -33,7 +33,7 @@ Vector *EngineMathsNewVector(int num, ...){
     return v;
 }
 
-Vector *EngineMathsFreeVector(Vector *v){
+Vector *CeosMathsFreeVector(Vector *v){
     free(v->value);
     free(v);
 

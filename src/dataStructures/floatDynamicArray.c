@@ -1,8 +1,8 @@
 #include "engine/dataStructure/floatDynamicArray.h"
 #include <assert.h>
 
-EngineFloatDynamicArray* EngineFloatDynamicArrayCreate(uint32_t size){
-	EngineFloatDynamicArray* arr = malloc(sizeof(EngineFloatDynamicArray));
+CeosFloatDynamicArray* CeosFloatDynamicArrayCreate(uint32_t size){
+	CeosFloatDynamicArray* arr = malloc(sizeof(CeosFloatDynamicArray));
 	MALLOC_CHECK(arr);
 	
 	arr->content = malloc(sizeof(float) * size);
@@ -13,7 +13,7 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayCreate(uint32_t size){
 	return arr;
 }
 
-EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray *arr){
+CeosFloatDynamicArray* CeosFloatDynamicArrayDestroy(CeosFloatDynamicArray *arr){
 	assert(arr != NULL && "cannot destroy a NULL dynamic array");
 	if (arr->size){
 		free(arr->content);
@@ -24,7 +24,7 @@ EngineFloatDynamicArray* EngineFloatDynamicArrayDestroy(EngineFloatDynamicArray 
 	return arr;
 }
 
-void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
+void* CeosFloatDynamicArrayInsert(CeosFloatDynamicArray* arr, float value){
 	assert(arr != NULL && "cannot insert data in a NULL dynamic array");
 	if (arr->used+1 >= arr->size){
 		arr->size += arr->step;
@@ -38,33 +38,33 @@ void* EngineFloatDynamicArrayInsert(EngineFloatDynamicArray* arr, float value){
 	return data;
 }
 
-float* EngineFloatDynamicArrayGetData(EngineFloatDynamicArray* arr){
+float* CeosFloatDynamicArrayGetData(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return arr->content;
 }
 
-uint32_t EngineFloatDynamicArrayGetSize(EngineFloatDynamicArray* arr){
+uint32_t CeosFloatDynamicArrayGetSize(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot get the size of a NULL dynamic array");
 	return arr->used;
 }
 
-void EngineFloatDynamicArrayClear(EngineFloatDynamicArray* arr){
+void CeosFloatDynamicArrayClear(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot clear a NULL dynamic array");
 	arr->used = 0;
 }
 
-void EngineFloatDynamicArrayCropToContent(EngineFloatDynamicArray* arr){
+void CeosFloatDynamicArrayCropToContent(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot set the size of a NULL dynamic array");
 	arr->size = arr->used;
 	arr->content = realloc(arr->content, arr->used * sizeof(float));
 }
 
-float* EngineFloatDynamicArrayGetBegin(EngineFloatDynamicArray* arr){
+float* CeosFloatDynamicArrayGetBegin(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return arr->content;
 }
 
-float* EngineFloatDynamicArrayGetEnd(EngineFloatDynamicArray* arr){
+float* CeosFloatDynamicArrayGetEnd(CeosFloatDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return &arr->content[arr->used];
 }

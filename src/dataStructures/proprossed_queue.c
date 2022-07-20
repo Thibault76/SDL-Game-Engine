@@ -3,7 +3,7 @@
 
 /*--------------------------------------------*/
 
-QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step){
+QueuePreproStruct *CeosQueuePreproNew(int initNbE, int step){
     QueuePreproStruct *q = malloc(sizeof(QueuePreproStruct));
     MALLOC_CHECK(q);
 
@@ -15,7 +15,7 @@ QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step){
     q->step = step;
 
     for (int i = 0; i < initNbE; i++) {
-        EnginequeuePreproAddElement(q);
+        CeosqueuePreproAddElement(q);
     }
 
     return q;
@@ -23,13 +23,13 @@ QueuePreproStruct *EngineQueuePreproNew(int initNbE, int step){
 
 /*--------------------------------------------*/
 
-void EnginequeuePreproAddElement(QueuePreproStruct *q){
+void CeosqueuePreproAddElement(QueuePreproStruct *q){
     QueueElement *e = malloc(sizeof(QueueElement));
     MALLOC_CHECK(e);
 
     e->value = NULL;
 
-    if(EngineQueuePreproIsEmpty(q)){
+    if(CeosQueuePreproIsEmpty(q)){
         q->first = e;
         q->last = e;
     } else {
@@ -41,7 +41,7 @@ void EnginequeuePreproAddElement(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-Bool EngineQueuePreproIsEmpty(QueuePreproStruct *q){
+Bool CeosQueuePreproIsEmpty(QueuePreproStruct *q){
     if(q->nbElement == 0){
         return true;
     }
@@ -50,16 +50,16 @@ Bool EngineQueuePreproIsEmpty(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproAddStepElement(QueuePreproStruct *q){
+void CeosQueuePreproAddStepElement(QueuePreproStruct *q){
     for (int i = 0; i < q->step; i++){
-        EnginequeuePreproAddElement(q);
+        CeosqueuePreproAddElement(q);
     }
 }
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproPopDefElement(QueuePreproStruct *q){
-    if(EngineQueuePreproIsEmpty(q))
+void CeosQueuePreproPopDefElement(QueuePreproStruct *q){
+    if(CeosQueuePreproIsEmpty(q))
         return;
     
     QueueElement *temp = q->first->next;
@@ -73,9 +73,9 @@ void EngineQueuePreproPopDefElement(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-QueuePreproStruct *EngineQueuePreproClearAll(QueuePreproStruct *q){
-    while(!EngineQueuePreproIsEmpty(q)){
-        EngineQueuePreproPopDefElement(q);
+QueuePreproStruct *CeosQueuePreproClearAll(QueuePreproStruct *q){
+    while(!CeosQueuePreproIsEmpty(q)){
+        CeosQueuePreproPopDefElement(q);
     }
     free(q);
 
@@ -84,8 +84,8 @@ QueuePreproStruct *EngineQueuePreproClearAll(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproPopElement(QueuePreproStruct *q){
-    if(EngineQueuePreproIsEmpty(q))
+void CeosQueuePreproPopElement(QueuePreproStruct *q){
+    if(CeosQueuePreproIsEmpty(q))
         return;
     
     QueueElement *temp = q->first;
@@ -101,12 +101,12 @@ void EngineQueuePreproPopElement(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-void _intern_EngineQueuePreproPushElement(QueuePreproStruct *q, void *x){
-    if(EngineQueuePreproIsEmpty(q))
-        EngineQueuePreproAddStepElement(q);
+void _intern_CeosQueuePreproPushElement(QueuePreproStruct *q, void *x){
+    if(CeosQueuePreproIsEmpty(q))
+        CeosQueuePreproAddStepElement(q);
     
     if(q->nbElement <= q->nbUsedElement)
-        EngineQueuePreproAddStepElement(q);
+        CeosQueuePreproAddStepElement(q);
 
     if(q->lastUse == NULL){
         q->lastUse = q->first;
@@ -122,11 +122,11 @@ void _intern_EngineQueuePreproPushElement(QueuePreproStruct *q, void *x){
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproPrintAllElementsInt(QueuePreproStruct *q){
+void CeosQueuePreproPrintAllElementsInt(QueuePreproStruct *q){
     printf("\n------------------------------\n");
     printf("Queue (ALL): ");
 
-    if(EngineQueuePreproIsEmpty(q))
+    if(CeosQueuePreproIsEmpty(q))
         printf("EMPTY");
 
     QueueElement *e = q->first;
@@ -140,11 +140,11 @@ void EngineQueuePreproPrintAllElementsInt(QueuePreproStruct *q){
 
 /*--------------------------------------------*/
 
-void EngineQueuePreproPrintUsedElementsInt(QueuePreproStruct *q){
+void CeosQueuePreproPrintUsedElementsInt(QueuePreproStruct *q){
 printf("\n------------------------------\n");
     printf("Queue (ONLY USED): ");
 
-    if(EngineQueuePreproIsEmpty(q) || q->nbUsedElement == 0)
+    if(CeosQueuePreproIsEmpty(q) || q->nbUsedElement == 0)
         printf("EMPTY");
 
     QueueElement *e = q->first;

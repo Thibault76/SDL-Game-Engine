@@ -1,8 +1,8 @@
 #include "engine/dataStructure/DynamicArray.h"
 #include <assert.h>
 
-EngineDynamicArray* EngineDynamicArrayCreate(uint32_t size){
-	EngineDynamicArray* arr = malloc(sizeof(EngineDynamicArray));
+CeosDynamicArray* CeosDynamicArrayCreate(uint32_t size){
+	CeosDynamicArray* arr = malloc(sizeof(CeosDynamicArray));
 	MALLOC_CHECK(arr);
 	
 	arr->content = malloc(sizeof(void*) * size);
@@ -12,7 +12,7 @@ EngineDynamicArray* EngineDynamicArrayCreate(uint32_t size){
 	return arr;
 }
 
-EngineDynamicArray* EngineDynamicArrayDestroy(EngineDynamicArray *arr){
+CeosDynamicArray* CeosDynamicArrayDestroy(CeosDynamicArray *arr){
 	assert(arr != NULL && "cannot destroy a NULL dynamic array");
 	if (arr->size){
 		free(arr->content);
@@ -23,7 +23,7 @@ EngineDynamicArray* EngineDynamicArrayDestroy(EngineDynamicArray *arr){
 	return arr;
 }
 
-void* EngineDynamicArrayInsert(EngineDynamicArray* arr, void* value){
+void* CeosDynamicArrayInsert(CeosDynamicArray* arr, void* value){
 	assert(arr != NULL && "cannot insert data in a NULL dynamic array");
 	if (arr->used+1 == arr->size){
 		arr->size *= 2;
@@ -36,33 +36,33 @@ void* EngineDynamicArrayInsert(EngineDynamicArray* arr, void* value){
 	return data;
 }
 
-void** EngineDynamicArrayGetData(EngineDynamicArray* arr){
+void** CeosDynamicArrayGetData(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return arr->content;
 }
 
-uint32_t EngineDynamicArrayGetSize(EngineDynamicArray* arr){
+uint32_t CeosDynamicArrayGetSize(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot get the size of a NULL dynamic array");
 	return arr->used;
 }
 
-void EngineDynamicArrayClear(EngineDynamicArray* arr){
+void CeosDynamicArrayClear(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot clear a NULL dynamic array");
 	arr->used = 0;
 }
 
-void EngineDynamicArrayCropToContent(EngineDynamicArray* arr){
+void CeosDynamicArrayCropToContent(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot set the size of a NULL dynamic array");
 	arr->size = arr->used;
 	arr->content = realloc(arr->content, arr->used * sizeof(void*));
 }
 
-void* EngineDynamicArrayGetBegin(EngineDynamicArray* arr){
+void* CeosDynamicArrayGetBegin(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return arr->content;
 }
 
-void* EngineDynamicArrayGetEnd(EngineDynamicArray* arr){
+void* CeosDynamicArrayGetEnd(CeosDynamicArray* arr){
 	assert(arr != NULL && "cannot get the data of a NULL dynamic array");
 	return &arr->content[arr->used];
 }

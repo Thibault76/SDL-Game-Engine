@@ -10,8 +10,8 @@ typedef struct Vector{
 typedef Vector Point;
 typedef Vector Dimensions;
 
-Vector *EngineMathsNewVector(int num, ...);
+Vector *CeosMathsNewVector(int num, ...);
 
-Vector *EngineMathsFreeVector(Vector *v);
+Vector *CeosMathsFreeVector(Vector *v);
 
 void printVector(Vector *v);
