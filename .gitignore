@@ -18,3 +18,4 @@ libvorbis-0.dll
 libvorbisfile-3.dll
 SDL2_mixer.dll
 .pkgconfig
+.test
