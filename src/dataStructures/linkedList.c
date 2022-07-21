@@ -1,11 +1,11 @@
-#include "engine/dataStructure/linked_list.h"
+#include "engine/dataStructure/linkedList.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 /*--------------------------------------------*/
 
-CeosLinkedList *CeosLinkedListCreate(void){
+CeosLinkedList *CeosLinkedListCreate(Bool isPreprossed, int poolSize, int step){
     CeosLinkedList *list;
     list = malloc(sizeof(CeosLinkedList));
     MALLOC_CHECK(list)
@@ -13,6 +13,12 @@ CeosLinkedList *CeosLinkedListCreate(void){
     list->first = NULL;
     list->last = NULL;
     list->size = 0;
+    list->pool = NULL;
+    list->step = step;
+    list->isPreprossed = isPreprossed;
+
+    if(isPreprossed)
+        CeosLinkedListInitPool(list, poolSize);
 
     return list;
 }
@@ -20,6 +26,14 @@ CeosLinkedList *CeosLinkedListCreate(void){
 /*--------------------------------------------*/
 
 CeosLinkedList *CeosLinkedListFree(CeosLinkedList *list){
+    while(!CeosLinkedListIsEmpty(list)){
+        CeosLinkedListDelete(list);
+    }
+
+    while(!CeosLinkedListIsEmpty(list->pool)){
+        CeosLinkedListDelete(list->pool);
+    }
+
     free(list);
     return NULL;
 }
@@ -37,7 +51,13 @@ Bool CeosLinkedListIsEmpty(CeosLinkedList *list){
 /*--------------------------------------------*/
 
 void __CeosLinkedListInsert(CeosLinkedList *list, void *data){
-    CeosLinkedListNode *node = CeosLinkedListCreateNode();
+    CeosLinkedListNode *node;
+
+    if(list->isPreprossed)
+        node = CeosLinkedListReturnFirstNode(list->pool);
+    else
+        node = CeosLinkedListCreateNode();
+
     node->data = data;
 
     if(CeosLinkedListIsEmpty(list)){
@@ -126,7 +146,13 @@ void CeosLinkedListDisplayBackwardInt(CeosLinkedList *list){
 /*--------------------------------------------*/
 
 void __CeosLinkedListInsertLast(CeosLinkedList *list, void *data){
-    CeosLinkedListNode *node = CeosLinkedListCreateNode();
+    CeosLinkedListNode *node;
+
+    if(list->isPreprossed)
+        node = CeosLinkedListReturnFirstNode(list->pool);
+    else
+        node = CeosLinkedListCreateNode();
+
     node->data = data;
 
     if(CeosLinkedListIsEmpty(list)){
@@ -160,6 +186,76 @@ void CeosLinkedListDeleteLast(CeosLinkedList *list){
     list->size--;
 
     node = CeosLinkedListFreeNode(node);
+}
+
+/*--------------------------------------------*/
+
+void CeosLinkedListInitPool(CeosLinkedList *list, int size){;
+    list->pool = CeosLinkedListCreate(false, 0, 0);
+
+    for(int i = 0; i < size; i++){
+        CeosLinkedListInsert(list->pool, CeosLinkedListCreateNode());
+    }
+}
+
+/*--------------------------------------------*/
+
+int CeosLinkedListSize(CeosLinkedList *list){
+    return list->size;
+}
+
+/*--------------------------------------------*/
+
+void CeosLinkedListDisplayPoolSize(CeosLinkedList *list){
+    printf("\n-----------------------------------------------------\n");
+    printf("POOL SIZE: %d", list->pool->size);
+    printf("\n-----------------------------------------------------\n");
+}
+
+/*--------------------------------------------*/
+
+CeosLinkedListNode *CeosLinkedListReturnFirstNode(CeosLinkedList *list){
+    if(CeosLinkedListIsEmpty(list))
+        return NULL;
+    
+    CeosLinkedListNode *node = list->first;
+
+    if(list->size == 1){
+        list->first = NULL;
+        list->last = NULL;
+    } else {
+        list->first = list->first->next;
+        list->first->prev = NULL;
+    }
+
+    list->size--;
+    node->next = NULL;
+    node->prev = NULL;
+
+    return node;
+}
+
+/*--------------------------------------------*/
+
+CeosLinkedListNode *CeosLinkedListReturnLastNode(CeosLinkedList *list){
+    if(CeosLinkedListIsEmpty(list))
+        return NULL;
+    
+    CeosLinkedListNode *node = list->last;
+
+    if(list->size == 1){
+        list->first = NULL;
+        list->last = NULL;
+    } else {
+        list->last = list->last->prev;
+        list->last->next = NULL;
+    }
+
+    list->size--;
+    node->next = NULL;
+    node->prev = NULL;
+
+    return node;
 }
 
 /*--------------------------------------------*/

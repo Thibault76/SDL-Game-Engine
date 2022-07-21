@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include "engine/dataStructure/linked_list.h"
+#include "engine/dataStructure/linkedList.h"
 
 int main(int argv, char **args){
     
     CeosLinkedList *list;
 
-    list = CeosLinkedListCreate();
+    list = CeosLinkedListCreate(true, 15, 5);
 
     CeosLinkedListInsertLast(list, 8);
     CeosLinkedListInsertLast(list, 7);

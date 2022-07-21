@@ -16,12 +16,15 @@ typedef struct CeosLinkedListNode {
 typedef struct CeosLinkedList{
     CeosLinkedListNode *first;
     CeosLinkedListNode *last;
+    struct CeosLinkedList *pool;
     int size;
+    int step;
+    Bool isPreprossed;
 } CeosLinkedList;
 
 /* Functions */
 
-CeosLinkedList *CeosLinkedListCreate(void);
+CeosLinkedList *CeosLinkedListCreate(Bool isPreprossed, int poolSize, int step);
 CeosLinkedList *CeosLinkedListFree(CeosLinkedList *list);
 Bool CeosLinkedListIsEmpty(CeosLinkedList *list);
 void __CeosLinkedListInsert(CeosLinkedList *list, void *data);
@@ -32,3 +35,8 @@ CeosLinkedListNode *CeosLinkedListCreateNode(void);
 CeosLinkedListNode *CeosLinkedListFreeNode(CeosLinkedListNode *node);
 void CeosLinkedListDisplayForwardInt(CeosLinkedList *list);
 void CeosLinkedListDisplayBackwardInt(CeosLinkedList *list);
+void CeosLinkedListInitPool(CeosLinkedList *list, int size);
+int CeosLinkedListSize(CeosLinkedList *list);
+void CeosLinkedListDisplayPoolSize(CeosLinkedList *list);
+CeosLinkedListNode *CeosLinkedListReturnFirstNode(CeosLinkedList *list);
+CeosLinkedListNode *CeosLinkedListReturnLastNode(CeosLinkedList *list);
