@@ -27,11 +27,11 @@ CeosLinkedList *CeosLinkedListCreate(Bool isPreprossed, int poolSize, int step){
 
 CeosLinkedList *CeosLinkedListFree(CeosLinkedList *list){
     while(!CeosLinkedListIsEmpty(list)){
-        CeosLinkedListDelete(list);
+        CeosLinkedListErease(list);
     }
 
     while(!CeosLinkedListIsEmpty(list->pool)){
-        CeosLinkedListDelete(list->pool);
+        CeosLinkedListErease(list->pool);
     }
 
     free(list);
@@ -73,7 +73,7 @@ void __CeosLinkedListInsert(CeosLinkedList *list, void *data){
 
 /*--------------------------------------------*/
 
-void CeosLinkedListDelete(CeosLinkedList *list){
+void CeosLinkedListErease(CeosLinkedList *list){
     if(CeosLinkedListIsEmpty(list)){
         return;
     }
@@ -168,7 +168,7 @@ void __CeosLinkedListInsertLast(CeosLinkedList *list, void *data){
 
 /*--------------------------------------------*/
 
-void CeosLinkedListDeleteLast(CeosLinkedList *list){
+void CeosLinkedListEreaseLast(CeosLinkedList *list){
     if(CeosLinkedListIsEmpty(list)){
         return;
     }
@@ -192,6 +192,7 @@ void CeosLinkedListDeleteLast(CeosLinkedList *list){
 
 void CeosLinkedListInitPool(CeosLinkedList *list, int size){;
     list->pool = CeosLinkedListCreate(false, 0, 0);
+    list->pool->step = list->step;
 
     for(int i = 0; i < size; i++){
         CeosLinkedListInsert(list->pool, CeosLinkedListCreateNode());
@@ -216,7 +217,7 @@ void CeosLinkedListDisplayPoolSize(CeosLinkedList *list){
 
 CeosLinkedListNode *CeosLinkedListReturnFirstNode(CeosLinkedList *list){
     if(CeosLinkedListIsEmpty(list))
-        return NULL;
+        CeosLinkedListAddStepNodes(list);
     
     CeosLinkedListNode *node = list->first;
 
@@ -239,7 +240,7 @@ CeosLinkedListNode *CeosLinkedListReturnFirstNode(CeosLinkedList *list){
 
 CeosLinkedListNode *CeosLinkedListReturnLastNode(CeosLinkedList *list){
     if(CeosLinkedListIsEmpty(list))
-        return NULL;
+        CeosLinkedListAddStepNodes(list);
     
     CeosLinkedListNode *node = list->last;
 
@@ -256,6 +257,56 @@ CeosLinkedListNode *CeosLinkedListReturnLastNode(CeosLinkedList *list){
     node->prev = NULL;
 
     return node;
+}
+
+/*--------------------------------------------*/
+
+void CeosLinkedListDelete(CeosLinkedList *list){
+    if(CeosLinkedListIsEmpty(list)){
+        return;
+    }
+
+    CeosLinkedListNode *node = list->first;
+
+    if(list->size == 1){
+        list->first = NULL;
+        list->last = NULL;
+    } else {
+        list->first = list->first->next;
+        list->first->prev = NULL;
+    }
+
+    list->size--;
+    CeosLinkedListInsert(list->pool, node);
+}
+
+/*--------------------------------------------*/
+
+void CeosLinkedListDeleteLast(CeosLinkedList *list){
+    if(CeosLinkedListIsEmpty(list)){
+        return;
+    }
+
+    CeosLinkedListNode *node = list->last;
+
+    if(list->size == 1){
+        list->first = NULL;
+        list->last = NULL;
+    } else {
+        list->last = list->last->prev;
+        list->last->next = NULL;
+    }
+
+    list->size--;
+    CeosLinkedListInsert(list->pool, node);
+}
+
+/*--------------------------------------------*/
+
+void CeosLinkedListAddStepNodes(CeosLinkedList *list){
+    for(int i = 0; i < list->step; i++){
+        CeosLinkedListInsert(list, CeosLinkedListCreateNode());
+    }
 }
 
 /*--------------------------------------------*/
